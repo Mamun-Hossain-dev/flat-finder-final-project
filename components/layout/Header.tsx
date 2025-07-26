@@ -1,0 +1,226 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  Menu,
+  X,
+  Home,
+  Building,
+  Users,
+  HelpCircle,
+  Phone,
+  LogOut,
+  User,
+  Settings,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+export default function Header() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { currentUser, userProfile, loading, logout } = useAuth();
+  const router = useRouter();
+
+  const navigation = [
+    // { name: "Home", href: "/", icon: Home },
+    { name: "Buy Flats", href: "/listings?type=sale", icon: Building },
+    { name: "Rent Flats", href: "/listings?type=rent", icon: Building },
+    { name: "Bachelor Flats", href: "/listings?type=bachelor", icon: Users },
+    { name: "How It Works", href: "/how-it-works", icon: HelpCircle },
+    { name: "Contact", href: "/contact", icon: Phone },
+  ];
+
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
+  return (
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          <Link href="/" className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <Home className="w-5 h-5 text-white" />
+            </div>
+            <span className="font-bold text-xl text-gray-900">FlatFinder</span>
+          </Link>
+
+          <nav className="hidden md:flex items-center space-x-8">
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+              >
+                {item.name}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="hidden md:flex items-center space-x-4">
+            {loading ? (
+              <div className="h-10 w-24 bg-gray-200 rounded-md animate-pulse"></div> // Placeholder for loading state
+            ) : currentUser && userProfile ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="relative h-10 w-10 rounded-full"
+                  >
+                    <Avatar className="h-10 w-10">
+                      {userProfile.profileImage ? (
+                        <AvatarImage
+                          src={userProfile.profileImage}
+                          alt={userProfile.name}
+                        />
+                      ) : (
+                        <AvatarFallback className="bg-blue-100 text-blue-600">
+                          {getInitials(userProfile.name)}
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">
+                        {userProfile.name}
+                      </p>
+                      <p className="text-xs leading-none text-muted-foreground">
+                        {userProfile.email}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard">
+                      <User className="mr-2 h-4 w-4" />
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard/profile">
+                      <Settings className="mr-2 h-4 w-4" />
+                      Profile Settings
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <Link href="/auth/login">
+                  <Button variant="outline">Login</Button>
+                </Link>
+                <Link href="/auth/register">
+                  <Button>Register</Button>
+                </Link>
+              </div>
+            )}
+          </div>
+
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="md:hidden p-2"
+          >
+            {isMenuOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
+          </button>
+        </div>
+
+        {isMenuOpen && (
+          <div className="md:hidden py-4 animate-fade-in">
+            <nav className="flex flex-col space-y-4">
+              {navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 font-medium"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <item.icon className="w-4 h-4" />
+                  <span>{item.name}</span>
+                </Link>
+              ))}
+
+              <div className="pt-4 border-t flex flex-col space-y-2">
+                {currentUser ? (
+                  <>
+                    <Link
+                      href="/dashboard"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <Button variant="outline" className="w-full">
+                        Dashboard
+                      </Button>
+                    </Link>
+                    <Button
+                      onClick={() => {
+                        handleLogout();
+                        setIsMenuOpen(false);
+                      }}
+                      variant="destructive"
+                      className="w-full"
+                    >
+                      Logout
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/auth/login"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <Button variant="outline" className="w-full">
+                        Login
+                      </Button>
+                    </Link>
+                    <Link
+                      href="/auth/register"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <Button className="w-full">Register</Button>
+                    </Link>
+                  </>
+                )}
+              </div>
+            </nav>
+          </div>
+        )}
+      </div>
+    </header>
+  );
+}

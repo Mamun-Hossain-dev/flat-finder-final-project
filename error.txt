@@ -1,0 +1,2 @@
+Invalid src prop (https://res.cloudinary.com/dlcpaiziv/image/upload/v1753516731/tbuipvyrlhsrm004kuxe.png) on `next/image`, hostname "res.cloudinary.com" is not configured under images in your `next.config.js`
+See more info: https://nextjs.org/docs/messages/next-image-unconfigured-host
