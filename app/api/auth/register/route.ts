@@ -1,7 +1,6 @@
 // app/api/auth/register/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
-import User from "@/models/User";
 import TemporaryUser from "@/models/TemporaryUser";
 import admin from "@/lib/firebase-admin";
 
@@ -55,7 +54,7 @@ export async function POST(request: NextRequest) {
 
     // Return success with firebaseUid and email for client-side verification
     return NextResponse.json({ success: true, message: "User created in Firebase. Please verify your email to complete registration.", firebaseUid, email }, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Registration error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

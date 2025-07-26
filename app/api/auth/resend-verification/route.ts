@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, message: "User found. Client should now send verification email." });
 
     return NextResponse.json({ success: true, message: "Verification email sent successfully." });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Resend verification error:", error);
     if (error.code === 'auth/user-not-found') {
       return NextResponse.json({ error: "No user found with that email." }, { status: 404 });
