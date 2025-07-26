@@ -4,11 +4,17 @@ import FlatListing from "@/models/FlatListing";
 import { verifyAuthToken } from "@/lib/auth-cookies";
 import User from "@/models/User";
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   await dbConnect();
   try {
-    const { id } = params;
-    const listing = await FlatListing.findById(id).populate("ownerId", "name email phone");
+    const { id } = await params; // Fixed: await params before accessing id
+    const listing = await FlatListing.findById(id).populate(
+      "ownerId",
+      "name email phone"
+    );
 
     if (!listing) {
       return NextResponse.json({ error: "Listing not found" }, { status: 404 });
@@ -21,14 +27,20 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     return NextResponse.json(listing);
   } catch (error) {
     console.error("Error fetching listing:", error);
-    return NextResponse.json({ error: "Failed to fetch listing" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch listing" },
+      { status: 500 }
+    );
   }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   await dbConnect();
   try {
-    const { id } = params;
+    const { id } = await params; // Fixed: await params before accessing id
     const firebaseUid = await verifyAuthToken(request);
     if (!firebaseUid) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -45,23 +57,37 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     }
 
     // Check if user is owner or admin
-    if (listing.ownerId.toString() !== user._id.toString() && user.role !== "admin") {
-      return NextResponse.json({ error: "Forbidden: You do not own this listing or are not an admin" }, { status: 403 });
+    if (
+      listing.ownerId.toString() !== user._id.toString() &&
+      user.role !== "admin"
+    ) {
+      return NextResponse.json(
+        { error: "Forbidden: You do not own this listing or are not an admin" },
+        { status: 403 }
+      );
     }
 
     const body = await request.json();
-    const updatedListing = await FlatListing.findByIdAndUpdate(id, body, { new: true });
+    const updatedListing = await FlatListing.findByIdAndUpdate(id, body, {
+      new: true,
+    });
     return NextResponse.json(updatedListing);
   } catch (error) {
     console.error("Error updating listing:", error);
-    return NextResponse.json({ error: "Failed to update listing" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to update listing" },
+      { status: 500 }
+    );
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   await dbConnect();
   try {
-    const { id } = params;
+    const { id } = await params; // This was already correct
     const firebaseUid = await verifyAuthToken(request);
     if (!firebaseUid) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -78,14 +104,26 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     }
 
     // Check if user is owner or admin
-    if (listing.ownerId.toString() !== user._id.toString() && user.role !== "admin") {
-      return NextResponse.json({ error: "Forbidden: You do not own this listing or are not an admin" }, { status: 403 });
+    if (
+      listing.ownerId.toString() !== user._id.toString() &&
+      user.role !== "admin"
+    ) {
+      return NextResponse.json(
+        { error: "Forbidden: You do not own this listing or are not an admin" },
+        { status: 403 }
+      );
     }
 
     await FlatListing.findByIdAndDelete(id);
-    return NextResponse.json({ message: "Listing deleted successfully" }, { status: 200 });
+    return NextResponse.json(
+      { message: "Listing deleted successfully" },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error deleting listing:", error);
-    return NextResponse.json({ error: "Failed to delete listing" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to delete listing" },
+      { status: 500 }
+    );
   }
 }

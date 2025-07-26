@@ -1,71 +1,12 @@
-A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
-
-- A server/client branch `if (typeof window !== 'undefined')`.
-- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
-- Date formatting in a user's locale which doesn't match the server.
-- External changing data without sending a snapshot of it along with the HTML.
-- Invalid HTML tag nesting.
-
-It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
-
-See more info here: https://nextjs.org/docs/messages/react-hydration-error
-
-
-  ...
-    <Provider store={{...}}>
-      <J attribute="class" defaultTheme="light" enableSystem={true}>
-        <V attribute="class" defaultTheme="light" enableSystem={true}>
-          <script>
-          <AuthProvider>
-            <div className="flex flex-...">
-              <Header>
-                <header className="sticky top...">
-                  <div className="container ...">
-                    <div className="flex items...">
-                      <LinkComponent>
-                      <nav className="hidden md:...">
-                        <LinkComponent>
-                        <LinkComponent>
-                        <LinkComponent>
-                        <LinkComponent>
-                        <LinkComponent>
-                        <LinkComponent href="/how-it-works" className="text-gray-...">
-                          <a
-+                           className="text-gray-600 hover:text-blue-600 font-medium transition-colors text-blue-600 u..."
--                           className="text-gray-600 hover:text-blue-600 font-medium transition-colors text-blue-600"
-                            ref={function}
-                            onClick={function onClick}
-                            onMouseEnter={function onMouseEnter}
-                            onTouchStart={function onTouchStart}
-                            href="/how-it-works"
-                          >
-+                           How It Works
-                        ...
-                      ...
-              ...
-app\layout.tsx (28:15) @ RootLayout
-
-
-  26 |           <AuthProvider>
-  27 |             <div className="flex flex-col min-h-screen">
-> 28 |               <Header />
-     |               ^
-  29 |               <main className="flex-grow">{children}</main>
-  30 |               <Footer />
-  31 |               <Toaster />
-Call Stack
-22
-
-Show 17 ignore-listed frame(s)
-a
-<anonymous>
-<unknown>
-.next\static\chunks\_68efbec2._.js (975:264)
-Array.map
-<anonymous>
-Header
-.next\static\chunks\_68efbec2._.js (975:50)
-RootLayout
-app\layout.tsx (28:15)
-1
-2
+Error: Route "/api/listings/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+    at GET (app\api\listings\[id]\route.ts:10:22)
+   8 |   await dbConnect();
+   9 |   try {
+> 10 |     const id = params.id;
+     |                      ^
+  11 |     const listing = await FlatListing.findById(id).populate("ownerId", "name email phone");
+  12 |
+  13 |     if (!listing) {
+ GET /favicon.ico?favicon.45db1c09.ico 200 in 1242ms
+ GET /api/listings/6884ede7ab93c0cab218074a 200 in 1140ms
+ GET /api/auth/profile/4RfwOjboD6WORhz2JiD8qvv9yPU2 200 in 356ms
