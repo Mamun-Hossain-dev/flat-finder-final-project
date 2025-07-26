@@ -1,12 +1,5 @@
-Error: Route "/api/listings/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
-    at GET (app\api\listings\[id]\route.ts:10:22)
-   8 |   await dbConnect();
-   9 |   try {
-> 10 |     const id = params.id;
-     |                      ^
-  11 |     const listing = await FlatListing.findById(id).populate("ownerId", "name email phone");
-  12 |
-  13 |     if (!listing) {
- GET /favicon.ico?favicon.45db1c09.ico 200 in 1242ms
- GET /api/listings/6884ede7ab93c0cab218074a 200 in 1140ms
- GET /api/auth/profile/4RfwOjboD6WORhz2JiD8qvv9yPU2 200 in 356ms
+   Linting and checking validity of types ...
+Failed to compile.
+./app/api/auth/forgot-password/route.ts
+16:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+21:37  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any

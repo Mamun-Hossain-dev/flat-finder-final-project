@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     await admin.auth().sendPasswordResetEmail(email);
 
     return NextResponse.json({ success: true, message: "Password reset email sent successfully." });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Password reset error:", error);
     if (error.code === 'auth/user-not-found') {
       return NextResponse.json({ error: "User with that email does not exist." }, { status: 404 });
