@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
+import TemporaryUser from "@/models/TemporaryUser";
 import admin from "@/lib/firebase-admin";
 
 export async function POST(request: NextRequest) {
@@ -20,9 +21,6 @@ export async function POST(request: NextRequest) {
         displayName: name,
       });
 
-      // Optionally send email verification
-      // await admin.auth().sendEmailVerification(firebaseUser.uid);
-
     } catch (firebaseError: any) {
       console.error("Firebase user creation error:", firebaseError);
       if (firebaseError.code === 'auth/email-already-exists') {
@@ -35,17 +33,8 @@ export async function POST(request: NextRequest) {
 
     const firebaseUid = firebaseUser.uid;
 
-    // 2. Check if user already exists in MongoDB (should ideally not happen if Firebase creation was successful)
-    const existingUser = await User.findOne({ $or: [{ email }, { firebaseUid }] });
-
-    if (existingUser) {
-      // If user somehow exists in MongoDB but not Firebase (or vice-versa), handle inconsistency
-      // For now, return error, but in production, you might want to link them or clean up.
-      return NextResponse.json({ error: "User already exists in database." }, { status: 409 });
-    }
-
-    // 3. Create new user in MongoDB
-    const newUser = new User({
+    // 2. Store temporary user data in MongoDB
+    const newTemporaryUser = new TemporaryUser({
       firebaseUid,
       email,
       name,
@@ -53,36 +42,19 @@ export async function POST(request: NextRequest) {
       role: role || "buyer",
       nidNumber,
       nidImage,
-      isVerified: false, // Email verification will be handled by Firebase and updated on login
     });
 
     try {
-      await newUser.save();
+      await newTemporaryUser.save();
     } catch (mongoError: any) {
-      console.error("MongoDB user save error:", mongoError);
+      console.error("MongoDB temporary user save error:", mongoError);
       // If MongoDB save fails, consider deleting the Firebase user to prevent orphaned accounts
       await admin.auth().deleteUser(firebaseUid);
-      return NextResponse.json({ error: "Failed to save user profile." }, { status: 500 });
+      return NextResponse.json({ error: "Failed to save temporary user profile." }, { status: 500 });
     }
 
-    // Return user without sensitive data
-    const userResponse = {
-      _id: newUser._id,
-      firebaseUid: newUser.firebaseUid,
-      email: newUser.email,
-      name: newUser.name,
-      phone: newUser.phone,
-      role: newUser.role,
-      isVerified: newUser.isVerified,
-      nidNumber: newUser.nidNumber,
-      nidImage: newUser.nidImage,
-      profileImage: newUser.profileImage,
-      warnings: newUser.warnings,
-      isBanned: newUser.isBanned,
-      createdAt: newUser.createdAt,
-    };
-
-    return NextResponse.json(userResponse, { status: 201 });
+    // Return success with firebaseUid and email for client-side verification
+    return NextResponse.json({ success: true, message: "User created in Firebase. Please verify your email to complete registration.", firebaseUid, email }, { status: 201 });
   } catch (error: any) {
     console.error("Registration error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

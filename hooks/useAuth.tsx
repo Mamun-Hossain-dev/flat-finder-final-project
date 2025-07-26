@@ -74,6 +74,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const newUser = await response.json();
       dispatch(setUser(newUser));
 
+      // Send email verification using the client-side Firebase SDK
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      await sendEmailVerification(userCredential.user);
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       dispatch(setError(error.message));

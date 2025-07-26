@@ -1,24 +1,12 @@
-// app/api/auth/profile/[uid]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
 
-interface Params {
-  uid: string;
-}
-
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { uid: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { uid: string } }) {
+  await dbConnect();
   try {
-    await dbConnect();
-
-    const { uid } = params;
-    console.log("Fetching profile for UID:", uid);
-
+    const { uid } = await params;
     const user = await User.findOne({ firebaseUid: uid });
-    console.log("MongoDB user found:", user);
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -43,10 +31,7 @@ export async function GET(
 
     return NextResponse.json(userResponse);
   } catch (error) {
-    console.error("Profile fetch error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error("Error fetching user profile:", error);
+    return NextResponse.json({ error: "Failed to fetch user profile" }, { status: 500 });
   }
 }

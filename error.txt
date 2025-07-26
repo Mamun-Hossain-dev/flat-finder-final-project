@@ -1,6 +1,71 @@
-identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyD2F-VLSzxOybTRwCBX-ZnZvqIqRrXJ268:1  Failed to load resource: the server responded with a status of 400 ()Understand this error
-identitytoolkit.googleapis.com/v1/page.tsx:44 
- POST http://localhost:3000/api/auth/resend-verification 500 (Internal Server Error)
+A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
 
-page.tsx:44 
- POST http://localhost:3000/api/auth/resend-verification 500 (Internal Server Error)
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+See more info here: https://nextjs.org/docs/messages/react-hydration-error
+
+
+  ...
+    <Provider store={{...}}>
+      <J attribute="class" defaultTheme="light" enableSystem={true}>
+        <V attribute="class" defaultTheme="light" enableSystem={true}>
+          <script>
+          <AuthProvider>
+            <div className="flex flex-...">
+              <Header>
+                <header className="sticky top...">
+                  <div className="container ...">
+                    <div className="flex items...">
+                      <LinkComponent>
+                      <nav className="hidden md:...">
+                        <LinkComponent>
+                        <LinkComponent>
+                        <LinkComponent>
+                        <LinkComponent>
+                        <LinkComponent>
+                        <LinkComponent href="/how-it-works" className="text-gray-...">
+                          <a
++                           className="text-gray-600 hover:text-blue-600 font-medium transition-colors text-blue-600 u..."
+-                           className="text-gray-600 hover:text-blue-600 font-medium transition-colors text-blue-600"
+                            ref={function}
+                            onClick={function onClick}
+                            onMouseEnter={function onMouseEnter}
+                            onTouchStart={function onTouchStart}
+                            href="/how-it-works"
+                          >
++                           How It Works
+                        ...
+                      ...
+              ...
+app\layout.tsx (28:15) @ RootLayout
+
+
+  26 |           <AuthProvider>
+  27 |             <div className="flex flex-col min-h-screen">
+> 28 |               <Header />
+     |               ^
+  29 |               <main className="flex-grow">{children}</main>
+  30 |               <Footer />
+  31 |               <Toaster />
+Call Stack
+22
+
+Show 17 ignore-listed frame(s)
+a
+<anonymous>
+<unknown>
+.next\static\chunks\_68efbec2._.js (975:264)
+Array.map
+<anonymous>
+Header
+.next\static\chunks\_68efbec2._.js (975:50)
+RootLayout
+app\layout.tsx (28:15)
+1
+2

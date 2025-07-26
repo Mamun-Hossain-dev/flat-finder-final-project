@@ -15,9 +15,8 @@ export async function POST(request: NextRequest) {
     const userRecord = await admin.auth().getUserByEmail(email);
     console.log("User record found:", userRecord.uid);
 
-    // Send email verification link
-    await admin.auth().sendEmailVerification(userRecord.uid);
-    console.log("Verification email sent for UID:", userRecord.uid);
+    // This backend route only confirms user existence. Client-side will send email verification.
+    return NextResponse.json({ success: true, message: "User found. Client should now send verification email." });
 
     return NextResponse.json({ success: true, message: "Verification email sent successfully." });
   } catch (error: any) {

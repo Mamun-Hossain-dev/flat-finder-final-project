@@ -1,34 +1,36 @@
-// app/api/auth/profile/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
+import { verifyAuthToken } from "@/lib/auth-cookies";
 
 export async function PUT(request: NextRequest) {
+  await dbConnect();
   try {
-    await dbConnect();
+    const firebaseUid = await verifyAuthToken(request);
+    if (!firebaseUid) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-    const body = await request.json();
-    const { firebaseUid, name, phone, nidNumber, nidImage, profileImage } =
-      body;
-
-    // Find and update user
-    const updatedUser = await User.findOneAndUpdate(
-      { firebaseUid },
-      {
-        ...(name && { name }),
-        ...(phone && { phone }),
-        ...(nidNumber && { nidNumber }),
-        ...(nidImage && { nidImage }),
-        ...(profileImage && { profileImage }),
-      },
-      { new: true }
-    );
-
-    if (!updatedUser) {
+    const user = await User.findOne({ firebaseUid });
+    if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Return updated user without sensitive data
+    const body = await request.json();
+    // Only allow updating specific fields for security
+    const updates: { [key: string]: any } = {};
+    if (body.name) updates.name = body.name;
+    if (body.phone) updates.phone = body.phone;
+    if (body.profileImage) updates.profileImage = body.profileImage;
+    // Add other fields that can be updated by the user
+
+    const updatedUser = await User.findByIdAndUpdate(user._id, updates, { new: true });
+
+    if (!updatedUser) {
+      return NextResponse.json({ error: "Failed to update user profile" }, { status: 500 });
+    }
+
+    // Return user without sensitive data
     const userResponse = {
       _id: updatedUser._id,
       firebaseUid: updatedUser.firebaseUid,
@@ -47,10 +49,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(userResponse);
   } catch (error) {
-    console.error("Profile update error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error("Error updating profile:", error);
+    return NextResponse.json({ error: "Failed to update profile" }, { status: 500 });
   }
 }

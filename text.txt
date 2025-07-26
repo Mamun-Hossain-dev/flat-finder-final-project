@@ -224,3 +224,42 @@ Admin Dashboard	☐
 Cloudinary Upload	☐
 SEO Optimization	☐
 Deployment to Vercel	☐
+
+
+
+
+
+
+
+
+
+
+The Failed to fetch user profile and GET        
+  /api/auth/profile/... 404 errors are expected   
+   in your new authentication flow. This is       
+  because the MongoDB user profile is now only    
+  created after email verification. So, when      
+  useAuth tries to fetch the profile for a        
+  newly registered but unverified user, it        
+  won't find it in MongoDB, leading to a 404.     
+  Your client-side application should handle      
+  this by displaying a message like "Please       
+  verify your email."
+
+  The critical issue that needs to be fixed       
+  is the persistent POST
+  /api/auth/resend-verification 500 (Internal     
+   Server Error). The error.txt you provided      
+  only shows the client-side error. To
+  diagnose this, I need the full output from      
+  your terminal where the Next.js server is       
+  running when you trigger the "Resend
+  Verification Email" action. This output
+  will contain the specific error message
+  from the console.error I added to
+  app/api/auth/resend-verification/route.ts.      
+
+  Please trigger the "Resend Verification 
+  Email" action and then provide the complete
+   server-side logs. This is essential for me
+   to pinpoint and fix the 500 error.

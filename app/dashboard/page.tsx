@@ -1,7 +1,7 @@
 // app/dashboard/page.tsx
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -12,17 +12,31 @@ import Link from "next/link";
 export default function DashboardPage() {
   const { userProfile, loading, currentUser } = useAuth();
   const router = useRouter();
+  const [totalListings, setTotalListings] = useState(0);
 
   useEffect(() => {
     if (!loading && !currentUser) {
-      // If not loading and no current user, redirect to login
       router.push("/auth/login");
     } else if (!loading && userProfile) {
-      // If user profile is loaded, redirect based on role or show generic dashboard
-      // For now, we'll show a generic dashboard. Role-specific dashboards will be implemented later.
       console.log("User role:", userProfile.role);
+      if (userProfile.role === "seller") {
+        fetchTotalListings();
+      }
     }
   }, [loading, currentUser, userProfile, router]);
+
+  const fetchTotalListings = async () => {
+    if (!userProfile) return;
+    try {
+      const response = await fetch(`/api/listings?ownerId=${userProfile._id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setTotalListings(data.length);
+      }
+    } catch (error) {
+      console.error("Error fetching total listings:", error);
+    }
+  };
 
   if (loading || !currentUser) {
     return (
@@ -72,10 +86,24 @@ export default function DashboardPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground">No listings yet</p>
+            <div className="text-2xl font-bold">{totalListings}</div>
+            <p className="text-xs text-muted-foreground">{totalListings === 0 ? "No listings yet" : "Total listings"}</p>
           </CardContent>
         </Card>
+        {userProfile.role === "seller" && (
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Manage Listings
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Link href="/dashboard/my-listings">
+                <Button className="w-full">My Listings</Button>
+              </Link>
+            </CardContent>
+          </Card>
+        )}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -101,7 +129,7 @@ export default function DashboardPage() {
       <div className="mt-8">
         <h2 className="text-2xl font-bold text-gray-900">Quick Actions</h2>
         <div className="mt-4 flex flex-wrap gap-4">
-          {userProfile.role === "seller" && <Button>Add New Listing</Button>}
+          {userProfile.role === "seller" && <Link href="/dashboard/add-listing"><Button>Add New Listing</Button></Link>}
           {userProfile.role === "buyer" && <Button>Browse Flats</Button>}
           {userProfile.role === "admin" && <Button>Manage Users</Button>}
           <Button

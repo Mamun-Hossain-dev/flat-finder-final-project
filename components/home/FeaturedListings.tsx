@@ -6,7 +6,24 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Bed, Bath, Square, Eye } from "lucide-react";
-import { FlatListing } from "@/types";
+
+interface FlatListing {
+  _id: string;
+  title: string;
+  description: string;
+  images: string[];
+  type: "sale" | "rent" | "bachelor";
+  location: { area: string; city: string };
+  price: number;
+  bedrooms: number;
+  bathrooms: number;
+  size: number;
+  isPremium: boolean;
+  ownerId: { name: string; email: string; phone: string };
+  views: number;
+  available: boolean;
+  isApproved: boolean;
+}
 
 export default function FeaturedListings() {
   const [listings, setListings] = useState<FlatListing[]>([]);
@@ -20,7 +37,7 @@ export default function FeaturedListings() {
     try {
       const response = await fetch("/api/listings?featured=true&limit=6");
       const data = await response.json();
-      setListings(data.listings || []);
+      setListings(data || []); // API now returns array directly
     } catch (error) {
       console.error("Error fetching featured listings:", error);
     } finally {

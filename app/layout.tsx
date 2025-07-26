@@ -2,6 +2,9 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import { AuthProvider } from "@/hooks/useAuth";
 import { Providers } from "@/app/providers";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +23,14 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <Providers>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <div className="flex flex-col min-h-screen">
+              <Header />
+              <main className="flex-grow">{children}</main>
+              <Footer />
+              <Toaster />
+            </div>
+          </AuthProvider>
         </Providers>
       </body>
     </html>

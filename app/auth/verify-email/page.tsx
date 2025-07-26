@@ -28,6 +28,18 @@ export default function VerifyEmailPage() {
     try {
       setLoading(true);
       setError("");
+      // Call backend to confirm user exists, then send client-side verification email
+      const response = await fetch("/api/auth/resend-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: currentUser.email }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to resend verification email");
+      }
+
       await sendEmailVerification(currentUser);
       setMessage("Verification email sent! Please check your inbox.");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

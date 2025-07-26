@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -17,6 +17,7 @@ import {
   User,
   Settings,
 } from "lucide-react";
+import { Label } from "@/components/ui/label";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,12 +32,35 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { currentUser, userProfile, loading, logout } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isActive = (href: string) => {
+    if (!mounted) return false; // Defer until mounted
+
+    if (href === "/") {
+      return pathname === href;
+    }
+    if (href.includes("?")) {
+      const [basePath, queryString] = href.split("?");
+      const params = new URLSearchParams(queryString);
+      const typeParam = params.get("type");
+      return pathname === basePath && searchParams.get("type") === typeParam;
+    }
+    return pathname === href;
+  };
 
   const navigation = [
-    // { name: "Home", href: "/", icon: Home },
+    { name: "Home", href: "/", icon: Home },
     { name: "Buy Flats", href: "/listings?type=sale", icon: Building },
     { name: "Rent Flats", href: "/listings?type=rent", icon: Building },
     { name: "Bachelor Flats", href: "/listings?type=bachelor", icon: Users },
+    { name: "All Listings", href: "/listings", icon: Building },
     { name: "How It Works", href: "/how-it-works", icon: HelpCircle },
     { name: "Contact", href: "/contact", icon: Phone },
   ];
@@ -75,7 +99,9 @@ export default function Header() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+                className={`text-gray-600 hover:text-blue-600 font-medium transition-colors ${
+                  isActive(item.href) ? "text-blue-600 underline" : ""
+                }`}
               >
                 {item.name}
               </Link>
@@ -168,7 +194,9 @@ export default function Header() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 font-medium"
+                  className={`flex items-center space-x-2 text-gray-600 hover:text-blue-600 font-medium ${
+                    isActive(item.href) ? "text-blue-600 underline" : ""
+                  }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <item.icon className="w-4 h-4" />

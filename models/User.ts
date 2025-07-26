@@ -12,7 +12,7 @@ const UserSchema = new mongoose.Schema(
     firebaseUid: { type: String, required: true, unique: true }, // Firebase UID
     email: { type: String, required: true, unique: true },
     name: { type: String, required: true },
-    phone: { type: String, required: true },
+    phone: { type: String },
     role: {
       type: String,
       enum: ["admin", "buyer", "seller", "tenant"],
