@@ -20,9 +20,11 @@ export function middleware(request: NextRequest) {
 
   // Get the auth token from cookies
   const authToken = request.cookies.get("auth-token")?.value;
+  console.log("Middleware: authToken from cookies:", authToken ? "Present" : "Not Present");
 
   // Verify the token
   const isValidToken = authToken ? verifyAuthToken(request) : null;
+  console.log("Middleware: isValidToken:", isValidToken ? "Valid" : "Invalid/Null");
 
   // Redirect to login if accessing protected route without auth
   if (isProtectedRoute && !isValidToken) {

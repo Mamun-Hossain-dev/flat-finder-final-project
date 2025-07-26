@@ -1,8 +1,0 @@
-flat-finder-docs
-Unsigned	
-overwrite:false
-use filename:false
-unique filename:false
-use filename as display name:true
-use asset folder as public id prefix:false
-type:upload

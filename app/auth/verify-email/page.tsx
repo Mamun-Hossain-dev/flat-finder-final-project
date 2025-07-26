@@ -46,7 +46,7 @@ export default function VerifyEmailPage() {
       await currentUser.reload();
       if (currentUser.emailVerified) {
         await refreshProfile();
-        router.push("/dashboard");
+        // Server will handle redirection
       } else {
         setError("Email is not verified yet. Please check your inbox.");
       }

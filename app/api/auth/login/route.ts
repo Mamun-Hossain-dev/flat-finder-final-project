@@ -47,11 +47,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const response = NextResponse.json({
+    let response = NextResponse.json({
       success: true,
       user: user.toObject(),
     });
-    setAuthCookie(response, firebaseUid);
+    response = await setAuthCookie(response, firebaseUid);
 
     return response;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

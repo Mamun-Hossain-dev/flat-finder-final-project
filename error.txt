@@ -1,2 +1,6 @@
-Invalid src prop (https://res.cloudinary.com/dlcpaiziv/image/upload/v1753516731/tbuipvyrlhsrm004kuxe.png) on `next/image`, hostname "res.cloudinary.com" is not configured under images in your `next.config.js`
-See more info: https://nextjs.org/docs/messages/next-image-unconfigured-host
+identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyD2F-VLSzxOybTRwCBX-ZnZvqIqRrXJ268:1  Failed to load resource: the server responded with a status of 400 ()Understand this error
+identitytoolkit.googleapis.com/v1/page.tsx:44 
+ POST http://localhost:3000/api/auth/resend-verification 500 (Internal Server Error)
+
+page.tsx:44 
+ POST http://localhost:3000/api/auth/resend-verification 500 (Internal Server Error)

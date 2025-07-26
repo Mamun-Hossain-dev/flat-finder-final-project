@@ -11,10 +11,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Get user by email to obtain their UID
+    console.log("Attempting to get user by email:", email);
     const userRecord = await admin.auth().getUserByEmail(email);
+    console.log("User record found:", userRecord.uid);
 
     // Send email verification link
     await admin.auth().sendEmailVerification(userRecord.uid);
+    console.log("Verification email sent for UID:", userRecord.uid);
 
     return NextResponse.json({ success: true, message: "Verification email sent successfully." });
   } catch (error: any) {
