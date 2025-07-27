@@ -23,7 +23,7 @@ export function clearAuthCookie(response: NextResponse) {
   response.cookies.delete("auth-token");
 }
 
-export async function verifyAuthToken(request: NextRequest): Promise<string | null> {
+export async function verifyAuthToken(request: NextRequest): Promise<jose.JWTPayload | null> {
   const token = request.cookies.get("auth-token")?.value;
 
   if (!token) {
@@ -33,10 +33,23 @@ export async function verifyAuthToken(request: NextRequest): Promise<string | nu
 
   try {
     const { payload } = await jose.jwtVerify(token, JWT_SECRET);
-    console.log("Auth token successfully verified. Decoded UID:", payload.firebaseUid);
-    return payload.firebaseUid as string;
+    console.log("Auth token successfully verified. Decoded payload:", payload);
+    return payload;
   } catch (error) {
     console.error("Auth token verification failed:", error);
+    return null;
+  }
+}
+
+export async function verifyToken(token: string | undefined): Promise<jose.JWTPayload | null> {
+  if (!token) {
+    return null;
+  }
+  try {
+    const { payload } = await jose.jwtVerify(token, JWT_SECRET);
+    return payload;
+  } catch (error) {
+    console.error("Token verification failed:", error);
     return null;
   }
 }

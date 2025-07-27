@@ -8,10 +8,34 @@ export async function POST(request: NextRequest) {
   try {
     await dbConnect();
 
+    console.log("Register API: Request received.");
     const body = await request.json();
+    console.log("Register API: Request body parsed.", body);
     const { email, password, name, phone, role, nidNumber, nidImage } = body;
 
-    // 1. Create user in Firebase Authentication
+    // 1. Check if user already exists in Firebase Authentication
+    try {
+      await admin.auth().getUserByEmail(email);
+      // If user exists in Firebase, they should log in, not register again
+      return NextResponse.json({ error: "Email already registered in Firebase. Please log in." }, { status: 409 });
+    } catch (error: any) {
+      if (error.code !== 'auth/user-not-found') {
+        console.error("Firebase getUserByEmail error:", error);
+        return NextResponse.json({ error: "Failed to check Firebase user existence." }, { status: 500 });
+      }
+      // User not found in Firebase, proceed with registration
+    }
+
+    // 2. Check if temporary user with this email already exists in MongoDB
+    const existingTemporaryUser = await TemporaryUser.findOne({ email });
+    if (existingTemporaryUser) {
+      // If temporary user exists but no Firebase user (checked above), it's an orphaned entry.
+      // Delete it to allow a fresh registration.
+      console.warn("Found orphaned TemporaryUser entry, deleting it.");
+      await TemporaryUser.deleteOne({ email });
+    }
+
+    // 3. Create user in Firebase Authentication
     let firebaseUser;
     try {
       firebaseUser = await admin.auth().createUser({

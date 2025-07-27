@@ -44,6 +44,31 @@ export default function ListingsPage() {
     isPremium: searchParams.get("isPremium") === "true",
   });
 
+  const [cityInput, setCityInput] = useState(filters.city);
+  const [areaInput, setAreaInput] = useState(filters.area);
+  const [maxPriceInput, setMaxPriceInput] = useState(filters.maxPrice);
+
+  useEffect(() => {
+    setCityInput(filters.city);
+    setAreaInput(filters.area);
+    setMaxPriceInput(filters.maxPrice);
+  }, [filters.city, filters.area, filters.maxPrice]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setFilters((prev) => ({
+        ...prev,
+        city: cityInput,
+        area: areaInput,
+        maxPrice: maxPriceInput,
+      }));
+    }, 500); // 500ms debounce time
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [cityInput, areaInput, maxPriceInput]);
+
   useEffect(() => {
     const fetchListings = async () => {
       setLoading(true);
@@ -72,10 +97,18 @@ export default function ListingsPage() {
   }, [filters]);
 
   const handleFilterChange = (name: string, value: string | boolean | null) => {
-    setFilters((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    if (name === "city") {
+      setCityInput(value as string);
+    } else if (name === "area") {
+      setAreaInput(value as string);
+    } else if (name === "maxPrice") {
+      setMaxPriceInput(value as string);
+    } else {
+      setFilters((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const applyFilters = () => {
@@ -134,18 +167,18 @@ export default function ListingsPage() {
 
         <Input
           placeholder="City"
-          value={filters.city}
+          value={cityInput}
           onChange={(e) => handleFilterChange("city", e.target.value)}
         />
         <Input
           placeholder="Area"
-          value={filters.area}
+          value={areaInput}
           onChange={(e) => handleFilterChange("area", e.target.value)}
         />
         <Input
           placeholder="Max Price"
           type="number"
-          value={filters.maxPrice}
+          value={maxPriceInput}
           onChange={(e) => handleFilterChange("maxPrice", e.target.value)}
         />
         <div className="flex items-center space-x-2">

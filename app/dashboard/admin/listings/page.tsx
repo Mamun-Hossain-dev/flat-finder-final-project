@@ -1,47 +1,33 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useToast } from '@/hooks/use-toast';
-import { useAuth } from "@/hooks/useAuth";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import { Home, Bed, Bath, Ruler, DollarSign, Tag, CheckCircle, XCircle } from "lucide-react";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 interface Listing {
   _id: string;
   title: string;
-  description: string;
-  images: string[];
   type: "sale" | "rent" | "bachelor";
   location: { area: string; city: string };
-  price: number;
-  bedrooms: number;
-  bathrooms: number;
-  size: number;
-  isPremium: boolean;
-  ownerId: { name: string; email: string; phone: string };
-  views: number;
-  available: boolean;
   isApproved: boolean;
+  isBanned: boolean;
 }
 
 export default function AdminListingsPage() {
-  const { userProfile, loading: authLoading } = useAuth();
-  const router = useRouter();
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const fetchListings = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/listings?isApproved=false`); // Fetch unapproved listings
+      const response = await fetch("/api/listings"); // Assuming this fetches all listings
       if (!response.ok) {
         throw new Error("Failed to fetch listings");
       }
@@ -60,57 +46,66 @@ export default function AdminListingsPage() {
   };
 
   useEffect(() => {
-    if (!authLoading && (!userProfile || userProfile.role !== "admin")) {
-      router.push("/dashboard"); // Redirect if not admin
-    } else if (userProfile && userProfile.role === "admin") {
-      fetchListings();
-    }
-  }, [userProfile, authLoading, router]);
+    fetchListings();
+  }, []);
 
-  const handleApproval = async (listingId: string, approve: boolean) => {
+  const handleStatusChange = async (id: string, status: "approved" | "banned" | "pending") => {
     try {
-      const response = await fetch(`/api/listings/${listingId}`, {
-        method: "PUT",
+      const response = await fetch(`/api/listings/${id}/status`, {
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ isApproved: approve }),
+        body: JSON.stringify({ status }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || `Failed to ${approve ? "approve" : "reject"} listing`);
+        throw new Error(errorData.error || "Failed to update listing status");
       }
 
       toast({
-        title: "Success!",
-        description: `Listing ${approve ? "approved" : "rejected"} successfully.`, 
+        title: "Success",
+        description: `Listing status updated to ${status}.`,
       });
-      fetchListings(); // Refresh the list
-    } catch (error: any) {
+      fetchListings(); // Re-fetch listings to update UI
+    } catch (err: any) {
       toast({
         title: "Error",
-        description: error.message || "An unexpected error occurred.",
+        description: err.message || "Failed to update listing status.",
         variant: "destructive",
       });
     }
   };
 
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
+  const handleMarkStatus = async (id: string, status: "sold" | "rented") => {
+    try {
+      const response = await fetch(`/api/listings/${id}/mark-status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status }),
+      });
 
-  if (!userProfile || userProfile.role !== "admin") {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-red-500">
-        <p>Access Denied: Only administrators can manage listings.</p>
-      </div>
-    );
-  }
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to mark listing status");
+      }
+
+      toast({
+        title: "Success",
+        description: `Listing marked as ${status}.`,
+      });
+      fetchListings(); // Re-fetch listings to update UI
+    } catch (err: any) {
+      toast({
+        title: "Error",
+        description: err.message || "Failed to mark listing status.",
+        variant: "destructive",
+      });
+    }
+  };
 
   if (loading) {
     return (
@@ -129,58 +124,98 @@ export default function AdminListingsPage() {
   }
 
   return (
-    <ProtectedRoute requiredRole="admin">
-      <div className="container mx-auto py-8">
-        <h1 className="text-3xl font-bold mb-6">Manage Listings (Admin)</h1>
-
-        {listings.length === 0 ? (
-          <div className="text-center text-gray-500 text-lg">
-            No unapproved listings found.
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {listings.map((listing) => (
-              <Card key={listing._id} className="overflow-hidden shadow-lg">
-                <div className="relative w-full h-48">
-                  <Image
-                    src={listing.images[0] || "/placeholder.jpg"}
-                    alt={listing.title}
-                    fill
-                    style={{ objectFit: "cover" }}
-                    className="rounded-t-lg"
-                  />
-                  {listing.isPremium && (
-                    <span className="absolute top-2 left-2 rounded-md bg-yellow-500 px-2 py-1 text-xs font-medium text-white">
-                      Premium
-                    </span>
-                  )}
-                </div>
-                <CardContent className="p-4">
-                  <CardTitle className="text-xl font-semibold mb-2">{listing.title}</CardTitle>
-                  <p className="text-gray-600 text-sm mb-2">{listing.location.area}, {listing.location.city}</p>
-                  <div className="flex items-center justify-between text-gray-700 text-lg font-bold mb-3">
-                    <span className="flex items-center"><DollarSign className="w-4 h-4 mr-1" />{listing.price.toLocaleString()}</span>
-                    <span className="flex items-center"><Tag className="w-4 h-4 mr-1" />{listing.type}</span>
-                  </div>
-                  <div className="flex items-center space-x-4 text-gray-600 text-sm">
-                    <span className="flex items-center"><Bed className="w-4 h-4 mr-1" />{listing.bedrooms} Beds</span>
-                    <span className="flex items-center"><Bath className="w-4 h-4 mr-1" />{listing.bathrooms} Baths</span>
-                    <span className="flex items-center"><Ruler className="w-4 h-4 mr-1" />{listing.size} sqft</span>
-                  </div>
-                  <div className="mt-4 flex justify-end space-x-2">
-                    <Button size="sm" onClick={() => handleApproval(listing._id, true)}>
-                      <CheckCircle className="w-4 h-4 mr-2" />Approve
-                    </Button>
-                    <Button variant="destructive" size="sm" onClick={() => handleApproval(listing._id, false)}>
-                      <XCircle className="w-4 h-4 mr-2" />Reject
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
-      </div>
-    </ProtectedRoute>
+    <div className="container mx-auto py-8">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold">Manage Listings</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {listings.length === 0 ? (
+            <div className="text-center text-gray-500 text-lg">
+              No listings to manage.
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Location</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {listings.map((listing) => (
+                  <TableRow key={listing._id}>
+                    <TableCell>
+                      <Link href={`/listings/${listing._id}`} className="text-blue-600 hover:underline">
+                        {listing.title}
+                      </Link>
+                    </TableCell>
+                    <TableCell>{listing.type}</TableCell>
+                    <TableCell>{listing.location.area}, {listing.location.city}</TableCell>
+                    <TableCell>
+                      {listing.isApproved && !listing.isBanned && <Badge variant="default">Approved</Badge>}
+                      {!listing.isApproved && !listing.isBanned && <Badge variant="secondary">Pending</Badge>}
+                      {listing.isBanned && <Badge variant="destructive">Banned</Badge>}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end space-x-2">
+                        {!listing.isApproved && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleStatusChange(listing._id, "approved")}
+                          >
+                            Approve
+                          </Button>
+                        )}
+                        {!listing.isBanned && (
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleStatusChange(listing._id, "banned")}
+                          >
+                            Ban
+                          </Button>
+                        )}
+                        {listing.isBanned && (
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => handleStatusChange(listing._id, "pending")}
+                          >
+                            Unban
+                          </Button>
+                        )}
+                        {listing.isApproved && !listing.isBanned && listing.type !== "sold" && listing.type !== "rented" && (
+                          <>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleMarkStatus(listing._id, "sold")}
+                            >
+                              Mark Sold
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleMarkStatus(listing._id, "rented")}
+                            >
+                              Mark Rented
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }

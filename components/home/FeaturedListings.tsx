@@ -161,13 +161,7 @@ export default function FeaturedListings() {
           </div>
         )}
 
-        <div className="text-center mt-12">
-          <Link href="/listings">
-            <Button size="lg" variant="outline">
-              View All Properties
-            </Button>
-          </Link>
-        </div>
+        
       </div>
     </section>
   );

@@ -57,15 +57,13 @@ export default function Header() {
 
   const navigation = [
     { name: "Home", href: "/", icon: Home },
-    { name: "Buy Flats", href: "/listings?type=sale", icon: Building },
-    { name: "Rent Flats", href: "/listings?type=rent", icon: Building },
-    { name: "Bachelor Flats", href: "/listings?type=bachelor", icon: Users },
     { name: "All Listings", href: "/listings", icon: Building },
     { name: "How It Works", href: "/how-it-works", icon: HelpCircle },
     { name: "Contact", href: "/contact", icon: Phone },
   ];
 
-  const getInitials = (name: string) => {
+  const getInitials = (name: string | null | undefined) => {
+    if (!name) return "";
     return name
       .split(" ")
       .map((n) => n[0])
@@ -150,6 +148,14 @@ export default function Header() {
                       Dashboard
                     </Link>
                   </DropdownMenuItem>
+                  {userProfile.role === "admin" && (
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard/admin/listings">
+                        <Settings className="mr-2 h-4 w-4" />
+                        Admin Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem asChild>
                     <Link href="/dashboard/profile">
                       <Settings className="mr-2 h-4 w-4" />

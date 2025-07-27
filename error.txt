@@ -1,13 +1,1 @@
-Failed to compile.
-21:37  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
-./app/api/auth/register/route.ts
-4:8  Warning: 'User' is defined but never used.  @typescript-eslint/no-unused-vars
-24:29  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
-49:26  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
-58:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
-./app/api/auth/resend-verification/route.ts
-22:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
-21:18  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
-56:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
-90:21  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
-101:36  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+<button class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-10 rounded-md px-8">Browse All Properties</button>
