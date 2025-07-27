@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, memo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -29,7 +29,7 @@ interface Listing {
   isApproved: boolean;
 }
 
-export default function ListingsPage() {
+const ListingsPage = memo(() => {
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -54,47 +54,33 @@ export default function ListingsPage() {
     setMaxPriceInput(filters.maxPrice);
   }, [filters.city, filters.area, filters.maxPrice]);
 
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setFilters((prev) => ({
-        ...prev,
-        city: cityInput,
-        area: areaInput,
-        maxPrice: maxPriceInput,
-      }));
-    }, 500); // 500ms debounce time
+  const fetchListings = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const params = new URLSearchParams();
+      if (filters.type) params.append("type", filters.type);
+      if (filters.city) params.append("city", filters.city);
+      if (filters.area) params.append("area", filters.area);
+      if (filters.maxPrice) params.append("maxPrice", filters.maxPrice);
+      if (filters.isPremium) params.append("isPremium", "true");
 
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [cityInput, areaInput, maxPriceInput]);
-
-  useEffect(() => {
-    const fetchListings = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const params = new URLSearchParams();
-        if (filters.type) params.append("type", filters.type);
-        if (filters.city) params.append("city", filters.city);
-        if (filters.area) params.append("area", filters.area);
-        if (filters.maxPrice) params.append("maxPrice", filters.maxPrice);
-        if (filters.isPremium) params.append("isPremium", "true");
-
-        const response = await fetch(`/api/listings?${params.toString()}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch listings");
-        }
-        const data = await response.json();
-        setListings(data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+      const response = await fetch(`/api/listings?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch listings");
       }
-    };
-    fetchListings();
+      const data = await response.json();
+      setListings(data);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }, [filters]);
+
+  useEffect(() => {
+    fetchListings();
+  }, [fetchListings]);
 
   const handleFilterChange = (name: string, value: string | boolean | null) => {
     if (name === "city") {
@@ -211,6 +197,7 @@ export default function ListingsPage() {
                     fill
                     style={{ objectFit: "cover" }}
                     className="rounded-t-lg"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
                   {listing.isPremium && (
                     <span className="absolute top-2 left-2 rounded-md bg-yellow-500 px-2 py-1 text-xs font-medium text-white">
@@ -238,4 +225,6 @@ export default function ListingsPage() {
       )}
     </div>
   );
-}
+});
+
+export default ListingsPage;

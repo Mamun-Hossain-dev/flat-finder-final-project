@@ -10,7 +10,7 @@ export async function GET(
 ) {
   await dbConnect();
   try {
-    const { id } = await params; // Fixed: await params before accessing id
+    const { id } = await params;
     const listing = await FlatListing.findById(id).populate(
       "ownerId",
       "name email phone"
@@ -40,7 +40,7 @@ export async function PUT(
 ) {
   await dbConnect();
   try {
-    const { id } = await params; // Fixed: await params before accessing id
+    const { id } = await params;
     const firebaseUid = await verifyAuthToken(request);
     if (!firebaseUid) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -87,7 +87,7 @@ export async function DELETE(
 ) {
   await dbConnect();
   try {
-    const { id } = await params; // This was already correct
+    const { id } = await params;
     const firebaseUid = await verifyAuthToken(request);
     if (!firebaseUid) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

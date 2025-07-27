@@ -1,1 +1,27 @@
-<button class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-10 rounded-md px-8">Browse All Properties</button>
+ GET /api/listings/6884ede7ab93c0cab218074a 500 in 1399ms
+ GET /api/auth/profile/NIjHgCKKH1OpD7A5Mp11v2SfXTh1 200 in 782ms
+ GET /listings/6884ede7ab93c0cab218074a 200 in 438ms
+Error: Route "/api/listings/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+    at GET (app\api\listings\[id]\route.ts:13:12)
+  11 |   await dbConnect();
+  12 |   try {
+> 13 |     const { id } = params;
+     |            ^
+  14 |     const listing = await FlatListing.findById(id).populate(
+  15 |       "ownerId",
+  16 |       "name email phone"
+ GET /favicon.ico?favicon.45db1c09.ico 200 in 1209ms
+Error fetching listing: Error: FlatListing validation failed: type: `sold` is not a valid enum value for path `type`.
+    at GET (app\api\listings\[id]\route.ts:29:12)
+  27 |     return NextResponse.json(listing);
+  28 |   } catch (error) {
+> 29 |     console.error("Error fetching listing:", error);
+     |            ^
+  30 |     return NextResponse.json(
+  31 |       { error: "Failed to fetch listing" },
+  32 |       { status: 500 } {
+  errors: [Object],
+  _message: 'FlatListing validation failed'
+}
+ GET /api/listings/6884ede7ab93c0cab218074a 500 in 1484ms
+ GET /api/auth/profile/NIjHgCKKH1OpD7A5Mp11v2SfXTh1 200 in 745ms

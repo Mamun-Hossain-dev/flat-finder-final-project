@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
     const limit = searchParams.get("limit"); // New: for limiting results
     const ownerId = searchParams.get("ownerId"); // New: for filtering by owner
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const query: any = {}; // Start with an empty query
 
     if (ownerId) {
@@ -44,7 +45,10 @@ export async function GET(request: NextRequest) {
       query.isPremium = true;
     }
 
-    let listingsQuery = FlatListing.find(query).populate("ownerId", "name email phone");
+    let listingsQuery = FlatListing.find(query).populate(
+      "ownerId",
+      "name email phone"
+    );
 
     if (limit) {
       listingsQuery = listingsQuery.limit(parseInt(limit));
@@ -55,7 +59,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(listings);
   } catch (error) {
     console.error("Error fetching listings:", error);
-    return NextResponse.json({ error: "Failed to fetch listings" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch listings" },
+      { status: 500 }
+    );
   }
 }
 
@@ -69,16 +76,26 @@ export async function POST(request: NextRequest) {
 
     const user = await User.findOne({ firebaseUid });
     if (!user || user.role !== "seller" || !user.isVerified) {
-      return NextResponse.json({ error: "Forbidden: Only verified sellers can create listings" }, { status: 403 });
+      return NextResponse.json(
+        { error: "Forbidden: Only verified sellers can create listings" },
+        { status: 403 }
+      );
     }
 
     const body = await request.json();
     console.log("Creating listing with ownerId:", user._id); // Added logging
-    const newListing = await FlatListing.create({ ...body, ownerId: user._id, isPremium: true });
+    const newListing = await FlatListing.create({
+      ...body,
+      ownerId: user._id,
+      isPremium: true,
+    });
     console.log("New listing created:", newListing); // Added logging
     return NextResponse.json(newListing, { status: 201 });
   } catch (error) {
     console.error("Error creating listing:", error);
-    return NextResponse.json({ error: "Failed to create listing" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create listing" },
+      { status: 500 }
+    );
   }
 }

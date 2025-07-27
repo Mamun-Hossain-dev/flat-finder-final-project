@@ -4,7 +4,7 @@ export interface IFlatListing extends Document {
   title: string;
   description: string;
   images: string[];
-  type: 'sale' | 'rent' | 'bachelor';
+  type: 'sale' | 'rent' | 'bachelor' | 'sold';
   location: {
     area: string;
     city: string;
@@ -25,7 +25,7 @@ const FlatListingSchema: Schema = new Schema(
     title: { type: String, required: true, trim: true },
     description: { type: String, required: true, trim: true },
     images: [{ type: String, required: true }],
-    type: { type: String, required: true, enum: ['sale', 'rent', 'bachelor'] },
+    type: { type: String, required: true, enum: ['sale', 'rent', 'bachelor', 'sold'] },
     location: {
       area: { type: String, required: true, trim: true },
       city: { type: String, required: true, trim: true },
