@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 import { CldUploadWidget } from "next-cloudinary";
 import Image from "next/image";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -35,6 +36,7 @@ type FormData = yup.InferType<typeof schema>;
 
 export default function EditListingPage() {
   const { userProfile, loading: authLoading } = useAuth();
+  const { toast } = useToast();
   const router = useRouter();
   const params = useParams();
   const { id } = params;
@@ -89,7 +91,7 @@ export default function EditListingPage() {
       };
       fetchListing();
     }
-  }, [id, reset, router]);
+  }, [id, reset, router, toast]);
 
   useEffect(() => {
     setValue("images", imageUrls);
@@ -229,9 +231,11 @@ export default function EditListingPage() {
                 </CldUploadWidget>
                 <div className="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {watchedImages.map((url, index) => (
-                    <div key={index} className="relative w-full h-32">
-                      <Image src={url} alt={`Uploaded image ${index + 1}`} fill style={{ objectFit: "cover" }} className="rounded-md" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" />
-                    </div>
+                    url && (
+                      <div key={index} className="relative w-full h-32">
+                        <Image src={url} alt={`Uploaded image ${index + 1}`} fill style={{ objectFit: "cover" }} className="rounded-md" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" />
+                      </div>
+                    )
                   ))}
                 </div>
                 {errors.images && <p className="text-red-500 text-sm">{errors.images.message}</p>}

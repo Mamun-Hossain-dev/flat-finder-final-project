@@ -21,10 +21,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, message: "Verification email sent successfully." });
   } catch (error: unknown) {
     console.error("Resend verification error:", error);
-    if (error.code === 'auth/user-not-found') {
-      return NextResponse.json({ error: "No user found with that email." }, { status: 404 });
-    } else if (error.code === 'auth/invalid-email') {
-      return NextResponse.json({ error: "Invalid email format." }, { status: 400 });
+    if (error && typeof error === 'object' && 'code' in error && typeof error.code === 'string') {
+      if (error.code === 'auth/user-not-found') {
+        return NextResponse.json({ error: "No user found with that email." }, { status: 404 });
+      } else if (error.code === 'auth/invalid-email') {
+        return NextResponse.json({ error: "Invalid email format." }, { status: 400 });
+      }
     }
     return NextResponse.json({ error: "Failed to resend verification email." }, { status: 500 });
   }

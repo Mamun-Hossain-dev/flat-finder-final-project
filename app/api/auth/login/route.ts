@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
       success: true,
       user: user.toObject(),
     });
-    response = await setAuthCookie(response, firebaseUid);
+    response = (await setAuthCookie(response, firebaseUid)) as NextResponse<{ success: boolean; user: any; }>;
 
     return response;
     } catch (error: any) {

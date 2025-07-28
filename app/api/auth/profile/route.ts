@@ -6,10 +6,11 @@ import { verifyAuthToken } from "@/lib/auth-cookies";
 export async function PUT(request: NextRequest) {
   await dbConnect();
   try {
-    const { firebaseUid } = await verifyAuthToken(request);
-    if (!firebaseUid) {
+    const authResult = await verifyAuthToken(request);
+    if (!authResult || !authResult.firebaseUid) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    const firebaseUid = authResult.firebaseUid;
 
     const user = await User.findOne({ firebaseUid });
     if (!user) {

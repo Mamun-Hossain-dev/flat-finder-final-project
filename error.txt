@@ -1,4 +1,4 @@
-PS C:\Users\USER\Desktop\Saraf-project\flat-finder> npm run build
+>>
 
 > flat-finder@0.1.0 build
 > next build
@@ -7,7 +7,7 @@ PS C:\Users\USER\Desktop\Saraf-project\flat-finder> npm run build
    - Environments: .env.local
 
    Creating an optimized production build ...
- ✓ Compiled successfully in 7.0s
+ ✓ Compiled successfully in 6.0s
 
 ./app/api/admin/temporary-listings/[id]/approve/route.ts
 43:13  Warning: '_id' is assigned a value but never used.  @typescript-eslint/no-unused-vars
@@ -16,20 +16,20 @@ PS C:\Users\USER\Desktop\Saraf-project\flat-finder> npm run build
 ./app/api/auth/logout/route.ts
 4:28  Warning: 'request' is defined but never used.  @typescript-eslint/no-unused-vars
 
+./app/api/users/[id]/assign-card/route.ts
+3:16  Warning: 'IUser' is defined but never used.  @typescript-eslint/no-unused-vars
+
 info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
 Failed to compile.
 
-.next/types/app/api/users/[id]/assign-card/route.ts:283:7
-Type error: Type '{ __tag__: "PATCH"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
-  The types of '__param_type__.params' are incompatible between these types.
-    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+./app/listings/page.tsx:219:20
+Type error: This comparison appears to be unintentional because the types '"sale" | "rent" | "bachelor"' and '"sold"' have no overlap.
 
-  281 |     Diff<
-  282 |       ParamCheck<RouteContext>,
-> 283 |       {
-      |       ^
-  284 |         __tag__: 'PATCH'
-  285 |         __param_position__: 'second'
-  286 |         __param_type__: SecondArg<MaybeField<TEntry, 'PATCH'>>
-Next.js build worker exited with code: 1 and signal: null
-PS C:\Users\USER\Desktop\Saraf-project\flat-finder>
+  217 |                     </span>
+  218 |                   )}
+> 219 |                   {listing.type === "sold" && (
+      |                    ^
+  220 |                     <span className="absolute top-2 right-2 rounded-md bg-red-600 px-2 py-1 text-xs font-medium text-white z-10">
+  221 |                       Sold
+  222 |                     </span>
+Next.js build worker exited with code: 1 and signal: 

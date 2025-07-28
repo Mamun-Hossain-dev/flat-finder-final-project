@@ -7,6 +7,8 @@ interface PaymentFormProps {
   amount: number;
   userId: string;
   userInfo: { name: string; email: string; phone: string; address?: string; city?: string };
+  onPaymentSuccess?: () => void; // Optional callback for successful payment
+  onPaymentCancel?: () => void; // Optional callback for cancelled payment
 }
 
 const PaymentForm = ({ listingType, amount, userId, userInfo }: PaymentFormProps) => {

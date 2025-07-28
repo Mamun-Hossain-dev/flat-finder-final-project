@@ -18,6 +18,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 import { CldUploadWidget } from "next-cloudinary";
 import { User, Mail, Phone, FileText, Upload, Save } from "lucide-react";
 import Link from "next/link";
@@ -30,6 +31,7 @@ const schema = yup.object({
 
 export default function ProfilePage() {
   const { userProfile, refreshProfile } = useAuth();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
@@ -130,7 +132,7 @@ export default function ProfilePage() {
               <Avatar className="h-24 w-24">
                 {profileImage || userProfile.profileImage ? (
                   <AvatarImage
-                    src={profileImage || userProfile.profileImage}
+                    src={profileImage || userProfile.profileImage || ""}
                     alt={userProfile.name}
                     sizes="(max-width: 768px) 100px, 120px"
                   />

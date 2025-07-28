@@ -22,7 +22,7 @@ interface Listing {
   title: string;
   description: string;
   images: string[];
-  type: "sale" | "rent" | "bachelor";
+  type: "sale" | "rent" | "bachelor" | "sold" | "rented";
   location: { area: string; city: string };
   price: number;
   bedrooms: number;

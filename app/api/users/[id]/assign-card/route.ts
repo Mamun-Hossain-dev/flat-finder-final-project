@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
-import User from "@/models/User";
+import User, { IUser } from "@/models/User";
 import { verifyToken } from "@/lib/auth-cookies";
 
-export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   await dbConnect();
 
   try {
@@ -20,7 +20,8 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const { id } = params;
+    const resolvedParams = await params;
+    const { id } = resolvedParams;
     const { cardType } = await request.json(); // 'yellow' or 'red'
 
     if (!cardType || !["yellow", "red"].includes(cardType)) {
@@ -37,7 +38,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     userToUpdate.warnings.push({ type: cardType, timestamp: new Date() });
 
     // Implement auto-ban logic if needed (e.g., after 2 yellow cards)
-    const yellowCards = userToUpdate.warnings.filter(w => w.type === 'yellow').length;
+    const yellowCards = (userToUpdate.warnings as { type: string }[]).filter(w => w.type === 'yellow').length;
     if (yellowCards >= 2) {
       userToUpdate.isBanned = true;
     }

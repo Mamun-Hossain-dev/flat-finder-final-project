@@ -1,7 +1,7 @@
 // app/dashboard/page.tsx
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import Link from "next/link";
 export default function DashboardPage() {
   const { userProfile, loading, currentUser } = useAuth();
   const router = useRouter();
+  const [totalListings, setTotalListings] = useState(0);
   const fetchTotalListings = useCallback(async () => {
     if (!userProfile) return;
     try {

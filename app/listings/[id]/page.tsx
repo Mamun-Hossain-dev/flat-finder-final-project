@@ -198,7 +198,7 @@ const ListingDetailsPage = memo(() => {
     toast({
       title: "Payment Cancelled",
       description: "Appointment booking cancelled.",
-      variant: "info",
+      variant: "default",
     });
   }, [toast]);
 

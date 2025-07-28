@@ -112,7 +112,7 @@ export default function AddListingPage() {
       const { _id: temporaryListingId } = tempListingData;
       console.log("Temporary Listing ID obtained from API:", temporaryListingId); // Added log
 
-      let listingTypeForFee = data.type;
+      let listingTypeForFee: "sale" | "rent" | "bachelor" | "premium_sell" | "normal_sell" | "premium_rent" | "normal_rent" | "bachelor_room" = data.type;
       if (data.type === "sale") {
         listingTypeForFee = data.isPremium ? "premium_sell" : "normal_sell";
       } else if (data.type === "rent") {
@@ -257,9 +257,11 @@ export default function AddListingPage() {
                 </CldUploadWidget>
                 <div className="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {watchedImages.map((url, index) => (
-                    <div key={index} className="relative w-full h-32">
-                      <Image src={url} alt={`Uploaded image ${index + 1}`} fill style={{ objectFit: "cover" }} className="rounded-md" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" />
-                    </div>
+                    url && (
+                      <div key={index} className="relative w-full h-32">
+                        <Image src={url} alt={`Uploaded image ${index + 1}`} fill style={{ objectFit: "cover" }} className="rounded-md" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" />
+                      </div>
+                    )
                   ))}
                 </div>
                 {errors.images && <p className="text-red-500 text-sm">{errors.images.message}</p>}

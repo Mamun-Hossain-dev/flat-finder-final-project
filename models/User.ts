@@ -1,13 +1,34 @@
-// lib/models/User.ts
 import mongoose from "mongoose";
 
-const WarningSchema = new mongoose.Schema({
+export interface IWarning {
+  type: "yellow" | "red";
+  reason: string;
+  date: Date;
+}
+
+export interface IUser extends mongoose.Document {
+  firebaseUid: string;
+  email: string;
+  name: string;
+  phone: string;
+  role: "admin" | "buyer" | "seller" | "tenant";
+  isVerified: boolean;
+  nidNumber?: string;
+  nidImage?: string;
+  profileImage?: string;
+  warnings: IWarning[];
+  isBanned: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const WarningSchema = new mongoose.Schema<IWarning>({
   type: { type: String, enum: ["yellow", "red"], required: true },
   reason: { type: String, required: true },
   date: { type: Date, default: Date.now },
 });
 
-const UserSchema = new mongoose.Schema(
+const UserSchema = new mongoose.Schema<IUser>(
   {
     firebaseUid: { type: String, required: true, unique: true }, // Firebase UID
     email: { type: String, required: true, unique: true },
