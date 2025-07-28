@@ -61,9 +61,9 @@ export default function Testimonials() {
     },
   ];
 
-  const nextSlide = () => {
+  const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev + 1) % testimonials.length);
-  };
+  }, [testimonials.length]);
 
   const prevSlide = () => {
     setCurrentSlide(
@@ -74,7 +74,7 @@ export default function Testimonials() {
   useEffect(() => {
     const timer = setInterval(nextSlide, 7000);
     return () => clearInterval(timer);
-  }, []);
+  }, [nextSlide]);
 
   const renderStars = (rating: number) => {
     return [...Array(5)].map((_, i) => (

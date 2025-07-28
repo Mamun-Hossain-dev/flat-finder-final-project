@@ -1,15 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import { Home, Bed, Bath, Ruler, DollarSign, Tag, Edit, Trash2 } from "lucide-react";
+import { Bed, Bath, Ruler, DollarSign, Tag, Edit, Trash2 } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 interface Listing {
@@ -33,12 +32,11 @@ interface Listing {
 export default function MyListingsPage() {
   const { toast } = useToast();
   const { userProfile, loading: authLoading } = useAuth();
-  const router = useRouter();
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchMyListings = async () => {
+  const fetchMyListings = useCallback(async () => {
     if (!userProfile) return;
 
     setLoading(true);
@@ -61,13 +59,13 @@ export default function MyListingsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userProfile, toast]);
 
   useEffect(() => {
     if (!authLoading && userProfile && userProfile.role === "seller") {
       fetchMyListings();
     }
-  }, [userProfile, authLoading]);
+  }, [userProfile, authLoading, fetchMyListings]);
 
   const handleDelete = async (listingId: string) => {
     try {
@@ -138,7 +136,7 @@ export default function MyListingsPage() {
 
         {listings.length === 0 ? (
           <div className="text-center text-gray-500 text-lg">
-            You haven't created any listings yet.
+            You haven&apos;t created any listings yet.
             <p className="mt-2"><Link href="/dashboard/add-listing" className="text-blue-600 hover:underline">Add a new listing</Link></p>
           </div>
         ) : (

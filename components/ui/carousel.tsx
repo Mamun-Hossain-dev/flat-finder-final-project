@@ -7,7 +7,8 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-interface CarouselProps extends React.HTMLAttributes<HTMLDivElement> {
+
+  interface CarouselProps extends React.HTMLAttributes<HTMLDivElement> {
   opts?: any;
   orientation?: "horizontal" | "vertical";
 }
@@ -78,9 +79,8 @@ const useCarousel = () => {
   return context;
 };
 
-interface CarouselContentProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-const CarouselContent = React.forwardRef<HTMLDivElement, CarouselContentProps>(
+  const CarouselContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => {
     const { emblaRef, orientation } = useCarousel();
 
@@ -101,9 +101,7 @@ const CarouselContent = React.forwardRef<HTMLDivElement, CarouselContentProps>(
 );
 CarouselContent.displayName = "CarouselContent";
 
-interface CarouselItemProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-const CarouselItem = React.forwardRef<HTMLDivElement, CarouselItemProps>(
+const CarouselItem = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => {
     const { orientation } = useCarousel();
 
@@ -124,14 +122,9 @@ const CarouselItem = React.forwardRef<HTMLDivElement, CarouselItemProps>(
 );
 CarouselItem.displayName = "CarouselItem";
 
-interface CarouselPreviousProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  onClick?: () => void;
-}
-
 const CarouselPrevious = React.forwardRef<
   HTMLButtonElement,
-  CarouselPreviousProps
+  React.ButtonHTMLAttributes<HTMLButtonElement>
 >(({ className, onClick, disabled, ...props }, ref) => (
   <Button
     ref={ref}
@@ -153,12 +146,7 @@ const CarouselPrevious = React.forwardRef<
 ));
 CarouselPrevious.displayName = "CarouselPrevious";
 
-interface CarouselNextProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  onClick?: () => void;
-}
-
-const CarouselNext = React.forwardRef<HTMLButtonElement, CarouselNextProps>(
+const CarouselNext = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement>>(
   ({ className, onClick, disabled, ...props }, ref) => (
     <Button
       ref={ref}

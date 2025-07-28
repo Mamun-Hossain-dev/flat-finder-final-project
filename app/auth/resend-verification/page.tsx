@@ -36,7 +36,6 @@ export default function ResendVerificationPage() {
     resolver: yupResolver(schema),
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (data: any) => {
     try {
       setError("");

@@ -44,7 +44,7 @@ export default function AddListingPage() {
   const [calculatedFee, setCalculatedFee] = useState<number | null>(null);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
 
-  const { register, handleSubmit, formState: { errors }, setValue, watch, control } = useForm<FormData>({
+  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<FormData>({
     resolver: yupResolver(schema),
     defaultValues: {
       images: [],
@@ -153,8 +153,7 @@ export default function AddListingPage() {
     }
   };
 
-  // handlePaymentSuccess function is removed as its logic will be moved to /api/payment/success/route.ts
-  const handlePaymentSuccess = async (data: FormData) => {};
+  
 
   const onUploadSuccess = (result: any) => {
     const newImageUrl = result.info.secure_url;

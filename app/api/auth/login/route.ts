@@ -69,8 +69,7 @@ export async function POST(request: NextRequest) {
     response = await setAuthCookie(response, firebaseUid);
 
     return response;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
+    } catch (error: any) {
     console.error("Login error:", error);
     if (
       error.code === "auth/argument-error" ||

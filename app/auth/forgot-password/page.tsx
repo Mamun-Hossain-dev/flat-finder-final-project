@@ -38,15 +38,13 @@ export default function ForgotPasswordPage() {
     resolver: yupResolver(schema),
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (data: any) => {
     try {
       setError("");
       setLoading(true);
       await sendPasswordResetEmail(auth, data.email);
       setSuccess(true);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
+      } catch (error: any) {
       setError(error.message);
     } finally {
       setLoading(false);

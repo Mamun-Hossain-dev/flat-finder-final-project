@@ -4,7 +4,7 @@ import FlatListing from "@/models/FlatListing";
 import User from "@/models/User";
 import { verifyToken } from "@/lib/auth-cookies";
 
-export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   await dbConnect();
 
   try {
@@ -21,7 +21,8 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const { id } = params;
+    const resolvedParams = await params;
+    const { id } = resolvedParams;
     const { status } = await request.json(); // 'sold' or 'rented'
 
     if (!status || !["sold", "rented"].includes(status)) {

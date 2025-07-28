@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
 
-export async function GET(request: NextRequest, { params }: { params: { uid: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ uid: string }> }) {
   await dbConnect();
   try {
     const { uid } = await params;

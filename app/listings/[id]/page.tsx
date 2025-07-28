@@ -19,8 +19,9 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Home, Bed, Bath, Ruler, DollarSign, Tag, Eye } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth"; // Import useAuth
+import { Home, Bed, Bath, Ruler, DollarSign, Tag, Eye, Phone, Mail } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import PaymentForm from "@/components/PaymentForm"; // Import PaymentForm
 
 interface Listing {
   _id: string;
@@ -42,13 +43,16 @@ interface Listing {
 
 const ListingDetailsPage = memo(() => {
   const params = useParams();
-  const id = Array.isArray(params.id) ? params.id[0] : params.id; // Handle array params
+  const id = Array.isArray(params.id) ? params.id[0] : params.id;
   const [listing, setListing] = useState<Listing | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
-  const { userProfile } = useAuth(); // Get userProfile from useAuth
-  console.log("User Profile:", userProfile); // Debugging line
+  const { userProfile } = useAuth();
+  const [showSellerDetails, setShowSellerDetails] = useState(false);
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [calculatedFee, setCalculatedFee] = useState<number | null>(null);
+  const [hasPaidForAppointment, setHasPaidForAppointment] = useState(false); // New state for payment status
 
   const fetchListing = useCallback(async () => {
     if (!id) {
@@ -73,12 +77,22 @@ const ListingDetailsPage = memo(() => {
 
       const data = await response.json();
 
-      // Validate the response data
       if (!data || typeof data !== "object") {
         throw new Error("Invalid listing data received");
       }
 
       setListing(data);
+
+      // Check localStorage for payment status after listing and userProfile are loaded
+      if (userProfile?._id && data._id) {
+        const paymentKey = `paid_appointment_${userProfile._id}_${data._id}`;
+        const paidStatus = localStorage.getItem(paymentKey) === "true";
+        setHasPaidForAppointment(paidStatus);
+        if (paidStatus) {
+          setShowSellerDetails(true); // If already paid, show seller details directly
+        }
+      }
+
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to load listing details";
@@ -91,21 +105,14 @@ const ListingDetailsPage = memo(() => {
     } finally {
       setLoading(false);
     }
-  }, [id, toast]);
+  }, [id, toast, userProfile]); // Add userProfile to dependencies
 
   useEffect(() => {
     fetchListing();
   }, [fetchListing]);
 
-  const handleBookAppointment = useCallback(() => {
-    if (!listing || !userProfile?._id) {
-      toast({
-        title: "Error",
-        description: "Could not book appointment. Missing listing or user ID.",
-        variant: "destructive",
-      });
-      return;
-    }
+  const openWhatsAppChat = useCallback(() => {
+    if (!listing || !userProfile) return;
 
     const adminPhoneNumber = "01640571091"; // Admin WhatsApp number
     const message = `Hello, I'm interested in booking an appointment for the flat listing: ${listing.title} (ID: ${listing._id}).\nLocation: ${listing.location?.area}, ${listing.location?.city}.\nPrice: ${listing.price?.toLocaleString()}.\nDetails: ${listing.bedrooms} Beds, ${listing.bathrooms} Baths, ${listing.size} sqft, Type: ${listing.type}.\nMy details are - Name: ${userProfile.name}, Email: ${userProfile.email}, Phone: ${userProfile.phone}, Role: ${userProfile.role}.`;
@@ -113,18 +120,87 @@ const ListingDetailsPage = memo(() => {
     window.open(whatsappUrl, "_blank");
 
     toast({
-      title: "Booking Request Sent",
+      title: "Appointment Request Sent",
       description: "You've been redirected to WhatsApp to contact the admin.",
     });
   }, [listing, userProfile, toast]);
 
-  const handleContactLandlord = useCallback(() => {
-    // This function is no longer used as seller info is hidden
-  }, []);
+  const handleBookAppointment = useCallback(async () => {
+    if (!listing || !userProfile?._id) {
+      toast({
+        title: "Error",
+        description: "Could not proceed. Missing listing or user ID.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-  const handleWhatsAppContact = useCallback(() => {
-    // This function is no longer used as seller info is hidden
-  }, []);
+    if (hasPaidForAppointment) {
+      openWhatsAppChat();
+      return;
+    }
+
+    if (listing.type === "rent" || listing.type === "bachelor") {
+      setShowSellerDetails(true);
+      openWhatsAppChat(); // Open WhatsApp directly for free listings
+      toast({
+        title: "Seller Details & WhatsApp Unlocked",
+        description: "You can now contact the seller directly via WhatsApp.",
+      });
+    } else if (listing.type === "sale") {
+      try {
+        const feeResponse = await fetch("/api/payment/calculate-appointment-fee", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: userProfile._id,
+            listingId: listing._id,
+          }),
+        });
+
+        if (!feeResponse.ok) {
+          const errorData = await feeResponse.json();
+          throw new Error(errorData.error || "Failed to calculate appointment fee.");
+        }
+
+        const { fee } = await feeResponse.json();
+        setCalculatedFee(fee);
+        setShowPaymentForm(true);
+
+      } catch (err: any) {
+        toast({
+          title: "Error",
+          description: err.message || "An unexpected error occurred during fee calculation.",
+          variant: "destructive",
+        });
+      }
+    }
+  }, [listing, userProfile, toast, hasPaidForAppointment, openWhatsAppChat]);
+
+  const handlePaymentSuccess = useCallback(() => {
+    setShowPaymentForm(false);
+    setShowSellerDetails(true);
+    setHasPaidForAppointment(true); // Mark as paid
+    if (userProfile?._id && listing?._id) {
+      localStorage.setItem(`paid_appointment_${userProfile._id}_${listing._id}`, "true");
+    }
+    toast({
+      title: "Payment Successful",
+      description: "Seller details are now visible. Redirecting to WhatsApp...",
+    });
+    openWhatsAppChat(); // Redirect to WhatsApp after successful payment
+  }, [toast, userProfile, listing, openWhatsAppChat]);
+
+  const handlePaymentCancel = useCallback(() => {
+    setShowPaymentForm(false);
+    toast({
+      title: "Payment Cancelled",
+      description: "Appointment booking cancelled.",
+      variant: "info",
+    });
+  }, [toast]);
 
   if (loading) {
     return (
@@ -211,9 +287,8 @@ const ListingDetailsPage = memo(() => {
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
                           priority={index === 0}
                           onError={(e) => {
-                            // Handle broken images
                             const target = e.target as HTMLImageElement;
-                            target.src = "/placeholder-image.jpg"; // Add a placeholder image
+                            target.src = "/placeholder-image.jpg";
                           }}
                         />
                       </div>
@@ -299,7 +374,7 @@ const ListingDetailsPage = memo(() => {
 
           {/* Booking/Contact Section */}
           <div className="border-t pt-6">
-            {userProfile && (
+            {userProfile && !showSellerDetails && !showPaymentForm && !hasPaidForAppointment && (
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button
                   onClick={handleBookAppointment}
@@ -308,6 +383,47 @@ const ListingDetailsPage = memo(() => {
                 >
                   Book Appointment via WhatsApp
                 </Button>
+              </div>
+            )}
+
+            {userProfile && hasPaidForAppointment && (
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button
+                  onClick={openWhatsAppChat}
+                  className="flex-1 sm:flex-initial bg-green-500 hover:bg-green-600"
+                >
+                  Payment Success & Appointment via WhatsApp
+                </Button>
+              </div>
+            )}
+
+            {showPaymentForm && calculatedFee !== null && userProfile && (
+              <div className="mt-6 p-4 border rounded-md bg-blue-50">
+                <h3 className="text-lg font-semibold mb-2">Payment Required</h3>
+                <p className="mb-4">Appointment booking fee: ৳{calculatedFee}</p>
+                <PaymentForm
+                  listingType="appointment_booking" // A new type for appointment booking
+                  amount={calculatedFee}
+                  userId={userProfile._id}
+                  userInfo={{
+                    name: userProfile.name,
+                    email: userProfile.email,
+                    phone: userProfile.phone,
+                  }}
+                  onPaymentSuccess={handlePaymentSuccess}
+                  onPaymentCancel={handlePaymentCancel}
+                />
+                <Button variant="outline" onClick={handlePaymentCancel} className="mt-2 w-full">
+                  Cancel Payment
+                </Button>
+              </div>
+            )}
+
+            {showSellerDetails && listing.ownerId && (
+              <div className="mt-6 p-4 border rounded-md bg-green-50">
+                <h3 className="text-lg font-semibold mb-2">Seller Details</h3>
+                <p className="flex items-center mb-1"><Mail className="w-4 h-4 mr-2" /> Email: {listing.ownerId.email}</p>
+                <p className="flex items-center"><Phone className="w-4 h-4 mr-2" /> Phone: {listing.ownerId.phone}</p>
               </div>
             )}
           </div>

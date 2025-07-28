@@ -5,7 +5,10 @@ import FlatListing from "@/models/FlatListing";
 import User from "@/models/User";
 import { verifyToken } from "@/lib/auth-cookies";
 
-export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   await dbConnect();
 
   try {
@@ -22,7 +25,9 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const { id } = params;
+    // Await the params promise
+    const resolvedParams = await params;
+    const id = resolvedParams.id; // Explicitly cast params to any
 
     if (!id) {
       return NextResponse.json({ error: "Temporary listing ID is required" }, { status: 400 });
@@ -35,9 +40,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     }
 
     // Create the permanent listing from the temporary one
-    const listingData = temporaryListing.toObject();
-    delete listingData._id; // Remove the _id so Mongoose generates a new one
-    delete listingData.__v; // Remove version key
+    const { _id, __v, ...listingData } = temporaryListing.toObject();
 
     const permanentListing = await FlatListing.create({
       ...listingData,

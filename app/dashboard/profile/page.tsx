@@ -42,7 +42,6 @@ export default function ProfilePage() {
     register,
     handleSubmit,
     formState: { errors },
-    reset,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -52,7 +51,6 @@ export default function ProfilePage() {
     },
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (data: any) => {
     try {
       setError("");
@@ -82,7 +80,6 @@ export default function ProfilePage() {
       });
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setError(error.message);
     } finally {
@@ -168,7 +165,6 @@ export default function ProfilePage() {
             <div className="pt-3">
               <CldUploadWidget
                 uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onSuccess={async (result: any) => {
                   const newProfileImage = result.info.secure_url;
                   setProfileImage(newProfileImage);
@@ -291,7 +287,6 @@ export default function ProfilePage() {
                   uploadPreset={
                     process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
                   }
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   onSuccess={(result: any) => {
                     setNidImage(result.info.secure_url);
                   }}

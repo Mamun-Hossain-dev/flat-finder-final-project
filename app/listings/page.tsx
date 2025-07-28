@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, memo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Home, Bed, Bath, Ruler, DollarSign, Tag } from "lucide-react";
+import { Bed, Bath, Ruler, DollarSign, Tag } from "lucide-react";
 
 interface Listing {
   _id: string;

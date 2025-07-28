@@ -4,7 +4,7 @@ import TemporaryListing from "@/models/TemporaryListing";
 import User from "@/models/User";
 import { verifyToken } from "@/lib/auth-cookies";
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   await dbConnect();
 
   try {
@@ -21,7 +21,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const { id } = params;
+    const resolvedParams = await params;
+    const { id } = resolvedParams;
 
     if (!id) {
       return NextResponse.json({ error: "Temporary listing ID is required" }, { status: 400 });

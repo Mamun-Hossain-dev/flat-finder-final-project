@@ -1,18 +1,35 @@
-The app/api/payment/success/route.ts file is updated. Next, I'll examine
-  app/api/listings/[id]/status/route.ts to understand its current
-  functionality and determine if it's suitable for implementing the admin
-  approval logic.Middleware: authToken from cookies: Present
-Auth token successfully verified. Decoded payload: { firebaseUid: 'lSoztcVm1IcB8ZZ4nh1frcazcLx1', exp: 1754321117 }
-Middleware: isValidToken: Valid
- GET /dashboard 200 in 595ms
- GET /favicon.ico?favicon.45db1c09.ico 200 in 370ms
- GET /api/auth/profile/lSoztcVm1IcB8ZZ4nh1frcazcLx1 200 in 200ms
-GET /api/listings: Filtering by ownerId: 6884e79b242939131bc739d8
-Final query object: { ownerId: new ObjectId('6884e79b242939131bc739d8') }
-GET /api/listings: Found listings: 0
- GET /api/listings?ownerId=6884e79b242939131bc739d8 200 in 184ms
-Middleware: authToken from cookies: Present
-Auth token successfully verified. Decoded payload: { firebaseUid: 'lSoztcVm1IcB8ZZ4nh1frcazcLx1', exp: 1754321117 }
-Middleware: isValidToken: Valid
- GET /dashboard/add-listing 200 in 106ms
- POST /api/temporary-listings 405 in 196ms
+PS C:\Users\USER\Desktop\Saraf-project\flat-finder> npm run build
+
+> flat-finder@0.1.0 build
+> next build
+
+   ▲ Next.js 15.4.4
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 7.0s
+
+./app/api/admin/temporary-listings/[id]/approve/route.ts
+43:13  Warning: '_id' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+43:18  Warning: '__v' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./app/api/auth/logout/route.ts
+4:28  Warning: 'request' is defined but never used.  @typescript-eslint/no-unused-vars
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+Failed to compile.
+
+.next/types/app/api/users/[id]/assign-card/route.ts:283:7
+Type error: Type '{ __tag__: "PATCH"; __param_position__: "second"; __param_type__: { params: { id: string; }; }; }' does not satisfy the constraint 'ParamCheck<RouteContext>'.
+  The types of '__param_type__.params' are incompatible between these types.
+    Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+
+  281 |     Diff<
+  282 |       ParamCheck<RouteContext>,
+> 283 |       {
+      |       ^
+  284 |         __tag__: 'PATCH'
+  285 |         __param_position__: 'second'
+  286 |         __param_type__: SecondArg<MaybeField<TEntry, 'PATCH'>>
+Next.js build worker exited with code: 1 and signal: null
+PS C:\Users\USER\Desktop\Saraf-project\flat-finder>

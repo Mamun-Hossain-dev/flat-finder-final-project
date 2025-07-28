@@ -24,7 +24,7 @@ export default function AdminListingsPage() {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const fetchAllListings = async () => {
+  const fetchAllListings = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -54,11 +54,11 @@ export default function AdminListingsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
 
   useEffect(() => {
     fetchAllListings();
-  }, []);
+  }, [fetchAllListings]);
 
   const handleApproveListing = async (id: string) => {
     try {

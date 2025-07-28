@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -25,7 +24,7 @@ export default function AdminComplaintsPage() {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const fetchComplaints = async () => {
+  const fetchComplaints = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -45,11 +44,11 @@ export default function AdminComplaintsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
 
   useEffect(() => {
     fetchComplaints();
-  }, []);
+  }, [fetchComplaints]);
 
   const handleStatusChange = async (id: string, status: "pending" | "reviewed" | "resolved" | "rejected") => {
     try {

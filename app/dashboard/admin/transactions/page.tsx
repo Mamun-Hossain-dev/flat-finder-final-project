@@ -24,7 +24,7 @@ export default function AdminTransactionsPage() {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const fetchTransactions = async () => {
+  const fetchTransactions = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -44,11 +44,11 @@ export default function AdminTransactionsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
 
   useEffect(() => {
     fetchTransactions();
-  }, []);
+  }, [fetchTransactions]);
 
   if (loading) {
     return (

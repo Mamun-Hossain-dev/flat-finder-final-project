@@ -1,7 +1,7 @@
 // app/auth/register/page.tsx
 "use client";
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -61,7 +61,6 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [nidImage, setNidImage] = useState<string>("");
-  const router = useRouter();
   const { register: registerUser } = useAuth();
   const searchParams = useSearchParams();
   const defaultRole = searchParams.get("role") || "";
@@ -79,9 +78,6 @@ export default function RegisterPage() {
     },
   });
 
-  const selectedRole = watch("role");
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (data: any) => {
     try {
       setError("");
@@ -101,8 +97,7 @@ export default function RegisterPage() {
       });
 
       setSuccess(true);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
+      } catch (error: any) {
       setError(error.message);
     } finally {
       setLoading(false);
@@ -242,7 +237,6 @@ export default function RegisterPage() {
               </p>
               <CldUploadWidget
                 uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET} // You'll need to create this preset in Cloudinary
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onSuccess={(result: any) => {
                   setNidImage(result.info.secure_url);
                 }}

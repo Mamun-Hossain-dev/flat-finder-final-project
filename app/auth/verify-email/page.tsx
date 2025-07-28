@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +19,6 @@ export default function VerifyEmailPage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const { currentUser, refreshProfile } = useAuth();
-  const router = useRouter();
 
   const resendVerification = async () => {
     if (!currentUser) return;
@@ -42,7 +40,6 @@ export default function VerifyEmailPage() {
 
       await sendEmailVerification(currentUser);
       setMessage("Verification email sent! Please check your inbox.");
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -62,7 +59,6 @@ export default function VerifyEmailPage() {
       } else {
         setError("Email is not verified yet. Please check your inbox.");
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err.message);
     } finally {

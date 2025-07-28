@@ -36,7 +36,6 @@ export async function GET(request: NextRequest) {
       console.warn("Authentication failed for listings GET, proceeding as public user:", authError);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const query: any = {}; // Start with an empty query
 
     // Handle status filter first, as it dictates approval state for admin views

@@ -2,11 +2,8 @@
 import { useState } from "react";
 import {
   Send,
-  User,
   Mail,
   Phone,
-  MessageSquare,
-  Briefcase,
   MapPin,
   Facebook,
   Twitter,

@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
-import { Home, Bed, Bath, Ruler, DollarSign, Tag } from "lucide-react";
+import { Bed, Bath, Ruler, DollarSign, Tag } from "lucide-react";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 interface TemporaryListing {

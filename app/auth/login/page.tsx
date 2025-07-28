@@ -39,15 +39,13 @@ export default function LoginPage() {
     resolver: yupResolver(schema),
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = async (data: any) => {
     try {
       setError("");
       setLoading(true);
       await login(data.email, data.password);
       router.push("/");
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
+      } catch (error: any) {
       if (error.message.includes("verify your email")) {
         router.push("/auth/verify-email");
       } else {

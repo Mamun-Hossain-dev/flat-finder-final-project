@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
 
     // 5. Set authentication cookie and redirect
     const response = NextResponse.json({ message: "Email verified successfully" });
-    const finalResponse = await setAuthCookie(response, firebaseUid);
+    await setAuthCookie(response, firebaseUid);
 
     return NextResponse.redirect(new URL("/dashboard", request.url), { status: 302 });
   } catch (error) {

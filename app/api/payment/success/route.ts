@@ -4,8 +4,6 @@ import Payment from "@/models/Payment";
 import { setAuthCookie } from "@/lib/auth-cookies";
 import User from "@/models/User";
 import Transaction from "@/models/Transaction";
-import TemporaryListing from "@/models/TemporaryListing";
-import FlatListing from "@/models/FlatListing";
 
 // Helper to safely create URL
 const createSafeUrl = (path: string, base: string | URL | null) => {

@@ -1,6 +1,7 @@
 "use client";
 
-import { Home, Search, DollarSign, Key, CheckCircle } from "lucide-react";
+import { Search, DollarSign, Key, CheckCircle } from "lucide-react";
+import Link from "next/link";
 
 export default function HowItWorksPage() {
   const steps = [
@@ -65,11 +66,11 @@ export default function HowItWorksPage() {
         <p className="text-lg text-gray-600 mb-8">
           Start browsing our extensive collection of verified listings today.
         </p>
-        <a href="/listings">
+        <Link href="/listings">
           <button className="px-8 py-4 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300">
             Browse Listings
           </button>
-        </a>
+        </Link>
       </div>
     </div>
   );

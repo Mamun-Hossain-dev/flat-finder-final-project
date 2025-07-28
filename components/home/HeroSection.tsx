@@ -15,7 +15,6 @@ import {
   Shield,
   CheckCircle,
   Users,
-  Sparkles,
   Home,
   TrendingUp,
 } from "lucide-react";

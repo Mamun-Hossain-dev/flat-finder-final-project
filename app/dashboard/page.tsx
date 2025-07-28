@@ -1,7 +1,7 @@
 // app/dashboard/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -12,20 +12,7 @@ import Link from "next/link";
 export default function DashboardPage() {
   const { userProfile, loading, currentUser } = useAuth();
   const router = useRouter();
-  const [totalListings, setTotalListings] = useState(0);
-
-  useEffect(() => {
-    if (!loading && !currentUser) {
-      router.push("/auth/login");
-    } else if (!loading && userProfile) {
-      console.log("User role:", userProfile.role);
-      if (userProfile.role === "seller") {
-        fetchTotalListings();
-      }
-    }
-  }, [loading, currentUser, userProfile, router]);
-
-  const fetchTotalListings = async () => {
+  const fetchTotalListings = useCallback(async () => {
     if (!userProfile) return;
     try {
       const response = await fetch(`/api/listings?ownerId=${userProfile._id}`);
@@ -36,7 +23,18 @@ export default function DashboardPage() {
     } catch (error) {
       console.error("Error fetching total listings:", error);
     }
-  };
+  }, [userProfile]);
+
+  useEffect(() => {
+    if (!loading && !currentUser) {
+      router.push("/auth/login");
+    } else if (!loading && userProfile) {
+      console.log("User role:", userProfile.role);
+      if (userProfile.role === "seller") {
+        fetchTotalListings();
+      }
+    }
+  }, [loading, currentUser, userProfile, router, fetchTotalListings]);
 
   if (loading || !currentUser) {
     return (
