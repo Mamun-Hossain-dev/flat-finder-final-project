@@ -1,24 +1,91 @@
-All Transactions
-User	Type	Amount	Status	Reference ID	Description	Date
-Sumaiya Akter (mamundev1281@gmail.com)	listing_premium	1500 BDT	completed	8a6fb6f357a080ef1f3b	Payment for normal_sale	7/28/2025, 5:44:47 PM
-Sumaiya Akter (mamundev1281@gmail.com)	other	350 BDT	completed	d3f93a4427bdd6971978	Payment for normal_rent	7/28/2025, 5:55:34 PM
-Sumaiya Akter (mamundev1281@gmail.com)	listing_premium	1500 BDT	completed	3758b78c14ff7b1572c9	Payment for normal_sale	7/28/2025, 5:59:31 PM
-Sumaiya Akter (mamundev1281@gmail.com)	listing_premium	1500 BDT	completed	24042bcedae42ea8a934	Payment for normal_sale	7/28/2025, 6:18:16 PM
-Sumaiya Akter (mamundev1281@gmail.com)	listing_premium	1500 BDT	completed	55239b8c58b46bd125e3	Payment for normal_sale	7/28/2025, 6:29:28 PM
-Sumaiya Akter (mamundev1281@gmail.com)	listing_premium	1500 BDT	completed	8543dced15a33ad851c5	Payment for normal_sale	7/28/2025, 6:32:36 PM
-Sumaiya Akter (mamundev1281@gmail.com)	listing_premium	1500 BDT	completed	c6c852e32f2f5d128cad	Payment for normal_sale	7/28/2025, 6:39:07 PM
-Sumaiya Akter (mamundev1281@gmail.com)	listing_premium	1500 BDT	completed	597f3cd75543420e54ff	Payment for normal_sale	7/28/2025, 6:41:03 PM
-Sumaiya Akter (mamundev1281@gmail.com)	listing_premium	1500 BDT	completed	ac3f2d65366b2a7a9299	Payment for normal_sale	7/28/2025, 6:43:18 PM
-Sumaiya Akter (mamundev1281@gmail.com)	other	350 BDT	completed	734eb3c799404b6acde0	Payment for normal_rent	7/28/2025, 6:50:24 PM
-Sumaiya Akter (mamundev1281@gmail.com)	listing_premium	1500 BDT	completed	cd1318202f6d3a0cc054	Payment for normal_sale	7/28/2025, 6:52:28 PM
-Sumaiya Akter (mamundev1281@gmail.com)	listing_premium	1500 BDT	completed	2e9381e341f5933655e3	Payment for normal_sale	7/28/2025, 6:57:19 PM
-Sumaiya Akter (mamundev1281@gmail.com)	listing_premium	1500 BDT	completed	49be761564273aa8764b	Payment for normal_sale	7/28/2025, 7:05:25 PM
-Sumaiya Akter (mamundev1281@gmail.com)	listing_premium	1500 BDT	completed	9a92eb7cd880ee1665b7	Payment for normal_sale	7/28/2025, 7:08:57 PM
-Sumaiya Akter (mamundev1281@gmail.com)	listing_premium	1500 BDT	completed	53b700d78641ad180650	Payment for normal_sale	7/28/2025, 7:11:28 PM
-Sumaiya Akter (mamundev1281@gmail.com)	listing_premium	1500 BDT	completed	8a0f0a4f89004f460c5d	Payment for normal_sale	7/28/2025, 7:16:10 PM
-Sumaiya Akter (mamundev1281@gmail.com)	listing_premium	1500 BDT	completed	afef3b36262dd02b76ff	Payment for normal_sale	7/28/2025, 7:23:53 PM
-Sumaiya Akter (mamundev1281@gmail.com)	listing_premium	1500 BDT	completed	e6bd9ac8f3ca0659ba31	Payment for normal_sale	7/28/2025, 7:25:12 PM
-Sumaiya Akter (mamundev1281@gmail.com)	listing_premium	1500 BDT	completed	8c927612bd2319fe947e	Payment for normal_sale	7/28/2025, 7:30:43 PM
-Sumaiya Akter (mamundev1281@gmail.com)	listing_premium	1500 BDT	completed	73fd433f970c69945fa8	Payment for normal_sale	7/28/2025, 7:34:38 PM
-Sumaiya Akter (mamundev1281@gmail.com)	listing_premium	1500 BDT	completed	f1f7670db827909d20d2	Payment for normal_sale	7/28/2025, 7:36:42 PM
-Sumaiya Akter (mamundev1281@gmail.com)	listing_premium	1500 BDT	completed	ce235ba263c343825caa	Payment for normal_sale	7/28/2025, 9:25:17 PM
+Next.js 15 Route Handler Migration Guide
+Issue: Dynamic Route Parameters Type Error
+In Next.js 15, all dynamic route parameters are now Promises. You need to update all route handlers in directories with [...] brackets.
+Files to Check and Fix
+Look for all files in these patterns:
+
+app/api/*/[id]/*/route.ts
+app/api/*/[slug]/*/route.ts
+app/api/*/[...params]/*/route.ts
+
+Before (Next.js 14 style):
+typescriptexport async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const id = params.id; // ❌ This will cause TypeScript error
+}
+After (Next.js 15 style):
+typescriptexport async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const resolvedParams = await params;
+  const id = resolvedParams.id; // ✅ Correct way
+}
+Common Route Files to Update:
+
+User Routes:
+
+app/api/users/[id]/route.ts
+app/api/users/[id]/assign-card/route.ts
+app/api/users/[id]/update/route.ts
+
+
+Listing Routes:
+
+app/api/listings/[id]/route.ts
+app/api/temporary-listings/[id]/approve/route.ts
+app/api/flat-listings/[id]/route.ts
+
+
+Admin Routes:
+
+app/api/admin/*/[id]/*/route.ts
+
+
+
+Step-by-Step Fix Process:
+1. Find All Dynamic Routes
+bashfind app/api -name "route.ts" -path "*/\[*\]/*"
+2. Update Each File
+For each file, change:
+
+Function parameter type: { params: { id: string } } → { params: Promise<{ id: string }> }
+Parameter access: params.id → (await params).id
+
+3. Template for Different HTTP Methods:
+typescript// GET, POST, PUT, DELETE, PATCH - all follow same pattern
+export async function METHOD_NAME(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const resolvedParams = await params;
+  const id = resolvedParams.id;
+  
+  // Rest of your logic...
+}
+4. For Multiple Parameters:
+typescript{ params }: { params: Promise<{ id: string; slug: string }> }
+5. For Catch-All Routes:
+typescript{ params }: { params: Promise<{ slug: string[] }> }
+Quick Fix Script
+You can create a script to find and list all files that need updating:
+bash# Find all route files in dynamic directories
+grep -r "params.*{.*}" app/api/*/\[*\]/*/route.ts
+Verification
+After making changes, run:
+bashnpm run build
+All TypeScript errors related to route parameters should be resolved.
+Common Mistakes to Avoid:
+
+❌ Forgetting to await params
+❌ Not updating the type to Promise<{...}>
+❌ Mixing old and new syntax in the same project
+❌ Not handling the promise properly
+
+Additional Notes:
+
+This change was made to support async operations in route parameters
+All existing functionality remains the same, just with async parameter access
+This affects only dynamic route segments (folders with [...] brackets

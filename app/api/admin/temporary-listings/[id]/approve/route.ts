@@ -40,7 +40,7 @@ export async function PATCH(
     }
 
     // Create the permanent listing from the temporary one
-    const { _id, __v, ...listingData } = temporaryListing.toObject();
+    const { ...listingData } = temporaryListing.toObject();
 
     const permanentListing = await FlatListing.create({
       ...listingData,

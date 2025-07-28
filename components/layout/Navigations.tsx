@@ -8,18 +8,18 @@ import { Button } from "@/components/ui/button";
 
 const Navigations = () => {
   const pathname = usePathname();
-  const { user, logout } = useAuth();
+  const { userProfile, currentUser, logout } = useAuth();
 
   return (
     <nav className="flex items-center space-x-4">
-      {user && user.role !== "admin" && (
+      {userProfile && userProfile.role !== "admin" && (
         <Link href="/dashboard">
           <Button variant={pathname === "/dashboard" ? "secondary" : "ghost"}>
             Dashboard
           </Button>
         </Link>
       )}
-      {user && (
+      {userProfile && (
         <Link href="/dashboard/profile">
           <Button
             variant={pathname === "/dashboard/profile" ? "secondary" : "ghost"}
@@ -28,7 +28,7 @@ const Navigations = () => {
           </Button>
         </Link>
       )}
-      {!user && (
+      {!currentUser && (
         <>
           <Link href="/auth/login">
             <Button variant={pathname === "/auth/login" ? "secondary" : "ghost"}>
@@ -44,7 +44,7 @@ const Navigations = () => {
           </Link>
         </>
       )}
-      {user && (
+      {currentUser && (
         <Button onClick={logout} variant="ghost">
           Logout
         </Button>

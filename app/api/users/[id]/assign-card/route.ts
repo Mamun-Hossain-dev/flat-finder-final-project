@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
-import User, { IUser } from "@/models/User";
+import User from "@/models/User";
 import { verifyToken } from "@/lib/auth-cookies";
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {

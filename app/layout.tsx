@@ -2,6 +2,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import { AuthProvider } from "@/hooks/useAuth";
 import { Providers } from "@/app/providers";
+import { Suspense } from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Toaster } from "@/components/ui/toaster";
@@ -24,12 +25,14 @@ export default function RootLayout({
       <body className={inter.className}>
         <Providers>
           <AuthProvider>
-            <div className="flex flex-col min-h-screen">
-              <Header />
-              <main className="flex-grow">{children}</main>
-              <Footer />
-              <Toaster />
-            </div>
+            <Suspense fallback={<div>Loading...</div>}>
+              <div className="flex flex-col min-h-screen">
+                <Header />
+                <main className="flex-grow">{children}</main>
+                <Footer />
+                <Toaster />
+              </div>
+            </Suspense>
           </AuthProvider>
         </Providers>
       </body>
