@@ -71,8 +71,20 @@ export async function POST(request: NextRequest) {
       await newTemporaryUser.save();
     } catch (mongoError: any) {
       console.error("MongoDB temporary user save error:", mongoError);
-      // If MongoDB save fails, consider deleting the Firebase user to prevent orphaned accounts
       await admin.auth().deleteUser(firebaseUid);
+
+      if (mongoError.code === 11000) {
+        // Duplicate key error (unique constraint violation)
+        let field = "unknown";
+        if (mongoError.keyPattern.email) field = "email";
+        else if (mongoError.keyPattern.phone) field = "phone number";
+        else if (mongoError.keyPattern.nidNumber) field = "NID number";
+        return NextResponse.json({ error: `This ${field} is already in use.` }, { status: 409 });
+      } else if (mongoError.name === "ValidationError") {
+        // Mongoose validation error (e.g., required field missing)
+        const errors = Object.keys(mongoError.errors).map(key => mongoError.errors[key].message);
+        return NextResponse.json({ error: errors.join(", ") }, { status: 400 });
+      }
       return NextResponse.json({ error: "Failed to save temporary user profile." }, { status: 500 });
     }
 

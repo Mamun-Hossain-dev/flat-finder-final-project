@@ -30,28 +30,21 @@ export default function Footer() {
     { name: "Refund Policy", href: "/refund-policy" },
   ];
 
-  const paymentMethods = [
-    { name: "bKash", logo: "/images/bkash-logo.png" },
-    { name: "Nagad", logo: "/images/nagad-logo.png" },
-    { name: "Rocket", logo: "/images/rocket-logo.png" },
-    { name: "Bank Transfer", logo: "/images/bank-logo.png" },
-  ];
-
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer className="bg-gradient-to-br from-slate-900 via-gray-900 to-slate-800 text-white">
       {/* Main footer content */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="container mx-auto px-6 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Company info */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                 <Home className="w-5 h-5 text-white" />
               </div>
               <span className="font-bold text-xl">FlatFinder</span>
             </div>
 
-            <p className="text-gray-300 leading-relaxed">
+            <p className="text-gray-300 leading-relaxed text-sm">
               Bangladesh&apos;s most trusted platform for buying, selling, and
               renting properties. Find your dream home with complete
               transparency and security.
@@ -71,37 +64,23 @@ export default function Footer() {
                 <span>info@flatfinder.com.bd</span>
               </div>
             </div>
+          </div>
 
-            {/* Social media links */}
-            <div className="flex items-center space-x-4 mt-4 md:mt-0">
-              <span className="text-sm text-gray-400">Follow us:</span>
-              <div className="flex space-x-3">
-                <a
-                  href="#"
-                  className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors"
-                >
-                  <Facebook className="w-4 h-4" />
-                </a>
-                <a
-                  href="#"
-                  className="w-8 h-8 bg-blue-400 rounded-full flex items-center justify-center hover:bg-blue-500 transition-colors"
-                >
-                  <Twitter className="w-4 h-4" />
-                </a>
-                <a
-                  href="#"
-                  className="w-8 h-8 bg-pink-600 rounded-full flex items-center justify-center hover:bg-pink-700 transition-colors"
-                >
-                  <Instagram className="w-4 h-4" />
-                </a>
-                <a
-                  href="#"
-                  className="w-8 h-8 bg-blue-700 rounded-full flex items-center justify-center hover:bg-blue-800 transition-colors"
-                >
-                  <Linkedin className="w-4 h-4" />
-                </a>
-              </div>
-            </div>
+          {/* Quick Links */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+            <ul className="space-y-2">
+              {quickLinks.map((link) => (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
+                    className="text-gray-300 hover:text-blue-400 transition-colors text-sm"
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
 
           {/* Legal links */}
@@ -121,24 +100,36 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-      </div>
 
-      {/* Payment methods */}
-      <div className="border-t border-gray-800 mt-8 pt-8">
-        <div className="flex flex-col md:flex-row items-center justify-between">
-          <div>
-            <h4 className="text-sm font-semibold mb-3 md:mb-0">
-              Accepted Payment Methods
-            </h4>
-            <div className="flex items-center space-x-4">
-              {paymentMethods.map((method) => (
-                <div
-                  key={method.name}
-                  className="px-3 py-2 bg-white rounded text-gray-900 text-xs font-medium"
-                >
-                  {method.name}
-                </div>
-              ))}
+        {/* Social Media Section */}
+        <div className="mt-8 pt-6 border-t border-gray-800">
+          <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+            <span className="text-gray-400 text-sm">Follow us:</span>
+            <div className="flex space-x-3">
+              <a
+                href="#"
+                className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors"
+              >
+                <Facebook className="w-4 h-4" />
+              </a>
+              <a
+                href="#"
+                className="w-8 h-8 bg-blue-400 rounded-full flex items-center justify-center hover:bg-blue-500 transition-colors"
+              >
+                <Twitter className="w-4 h-4" />
+              </a>
+              <a
+                href="#"
+                className="w-8 h-8 bg-pink-600 rounded-full flex items-center justify-center hover:bg-pink-700 transition-colors"
+              >
+                <Instagram className="w-4 h-4" />
+              </a>
+              <a
+                href="#"
+                className="w-8 h-8 bg-blue-700 rounded-full flex items-center justify-center hover:bg-blue-800 transition-colors"
+              >
+                <Linkedin className="w-4 h-4" />
+              </a>
             </div>
           </div>
         </div>
@@ -146,7 +137,7 @@ export default function Footer() {
 
       {/* Copyright */}
       <div className="border-t border-gray-800">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-6 py-4">
           <div className="flex flex-col md:flex-row items-center justify-between text-sm text-gray-400">
             <p>© {currentYear} FlatFinder Bangladesh. All rights reserved.</p>
             <p>Made with ❤️ for the people of Bangladesh</p>

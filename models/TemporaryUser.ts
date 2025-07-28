@@ -16,9 +16,9 @@ const TemporaryUserSchema: Schema = new Schema(
     firebaseUid: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     name: { type: String, required: true },
-    phone: { type: String },
+    phone: { type: String, required: true, unique: true },
     role: { type: String, required: true, enum: ['admin', 'seller', 'buyer', 'tenant'] },
-    nidNumber: { type: String },
+    nidNumber: { type: String, unique: true },
     nidImage: { type: String },
   },
   { timestamps: true }

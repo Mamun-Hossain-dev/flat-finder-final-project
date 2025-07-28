@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { verifyAuthToken } from "@/lib/auth-cookies";
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Define protected routes
@@ -23,7 +23,7 @@ export function middleware(request: NextRequest) {
   console.log("Middleware: authToken from cookies:", authToken ? "Present" : "Not Present");
 
   // Verify the token
-  const isValidToken = authToken ? verifyAuthToken(request) : null;
+  const isValidToken = authToken ? await verifyAuthToken(request) : null;
   console.log("Middleware: isValidToken:", isValidToken ? "Valid" : "Invalid/Null");
 
   // Redirect to login if accessing protected route without auth

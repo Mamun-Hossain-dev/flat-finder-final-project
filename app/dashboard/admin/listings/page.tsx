@@ -13,26 +13,37 @@ interface Listing {
   title: string;
   type: "sale" | "rent" | "bachelor";
   location: { area: string; city: string };
-  isApproved: boolean;
-  isBanned: boolean;
+  isApproved?: boolean; // Optional for temporary listings
+  isBanned?: boolean; // Optional for temporary listings
 }
 
 export default function AdminListingsPage() {
-  const [listings, setListings] = useState<Listing[]>([]);
+  const [temporaryListings, setTemporaryListings] = useState<Listing[]>([]);
+  const [permanentListings, setPermanentListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const fetchListings = async () => {
+  const fetchAllListings = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch("/api/listings"); // Assuming this fetches all listings
-      if (!response.ok) {
-        throw new Error("Failed to fetch listings");
+      // Fetch temporary listings for admin approval
+      const tempResponse = await fetch("/api/temporary-listings");
+      if (!tempResponse.ok) {
+        throw new Error("Failed to fetch temporary listings");
       }
-      const data = await response.json();
-      setListings(data);
+      const tempData = await tempResponse.json();
+      setTemporaryListings(tempData);
+
+      // Fetch all permanent listings (including pending, approved, banned for admin view)
+      const permResponse = await fetch("/api/listings?status=all"); // Assuming a new status=all filter for admin
+      if (!permResponse.ok) {
+        throw new Error("Failed to fetch permanent listings");
+      }
+      const permData = await permResponse.json();
+      setPermanentListings(permData);
+
     } catch (err: any) {
       setError(err.message);
       toast({
@@ -46,8 +57,36 @@ export default function AdminListingsPage() {
   };
 
   useEffect(() => {
-    fetchListings();
+    fetchAllListings();
   }, []);
+
+  const handleApproveListing = async (id: string) => {
+    try {
+      const response = await fetch(`/api/admin/temporary-listings/${id}/approve`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to approve listing");
+      }
+
+      toast({
+        title: "Success",
+        description: "Listing approved and moved to permanent listings.",
+      });
+      fetchAllListings(); // Re-fetch all listings to update UI
+    } catch (err: any) {
+      toast({
+        title: "Error",
+        description: err.message || "Failed to approve listing.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleStatusChange = async (id: string, status: "approved" | "banned" | "pending") => {
     try {
@@ -68,7 +107,7 @@ export default function AdminListingsPage() {
         title: "Success",
         description: `Listing status updated to ${status}.`,
       });
-      fetchListings(); // Re-fetch listings to update UI
+      fetchAllListings(); // Re-fetch all listings to update UI
     } catch (err: any) {
       toast({
         title: "Error",
@@ -97,7 +136,7 @@ export default function AdminListingsPage() {
         title: "Success",
         description: `Listing marked as ${status}.`,
       });
-      fetchListings(); // Re-fetch listings to update UI
+      fetchAllListings(); // Re-fetch all listings to update UI
     } catch (err: any) {
       toast({
         title: "Error",
@@ -130,89 +169,130 @@ export default function AdminListingsPage() {
           <CardTitle className="text-2xl font-bold">Manage Listings</CardTitle>
         </CardHeader>
         <CardContent>
-          {listings.length === 0 ? (
-            <div className="text-center text-gray-500 text-lg">
-              No listings to manage.
+          <h2 className="text-xl font-semibold mb-4">Temporary Listings (Pending Approval)</h2>
+          {temporaryListings.length === 0 ? (
+            <div className="text-center text-gray-500 text-lg mb-8">
+              No temporary listings to approve.
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {listings.map((listing) => (
-                  <TableRow key={listing._id}>
-                    <TableCell>
-                      <Link href={`/listings/${listing._id}`} className="text-blue-600 hover:underline">
-                        {listing.title}
-                      </Link>
-                    </TableCell>
-                    <TableCell>{listing.type}</TableCell>
-                    <TableCell>{listing.location.area}, {listing.location.city}</TableCell>
-                    <TableCell>
-                      {listing.isApproved && !listing.isBanned && <Badge variant="default">Approved</Badge>}
-                      {!listing.isApproved && !listing.isBanned && <Badge variant="secondary">Pending</Badge>}
-                      {listing.isBanned && <Badge variant="destructive">Banned</Badge>}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end space-x-2">
-                        {!listing.isApproved && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleStatusChange(listing._id, "approved")}
-                          >
-                            Approve
-                          </Button>
-                        )}
-                        {!listing.isBanned && (
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => handleStatusChange(listing._id, "banned")}
-                          >
-                            Ban
-                          </Button>
-                        )}
-                        {listing.isBanned && (
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            onClick={() => handleStatusChange(listing._id, "pending")}
-                          >
-                            Unban
-                          </Button>
-                        )}
-                        {listing.isApproved && !listing.isBanned && listing.type !== "sold" && listing.type !== "rented" && (
-                          <>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleMarkStatus(listing._id, "sold")}
-                            >
-                              Mark Sold
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleMarkStatus(listing._id, "rented")}
-                            >
-                              Mark Rented
-                            </Button>
-                          </>
-                        )}
-                      </div>
-                    </TableCell>
+            <div className="overflow-x-auto mb-8">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Title</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Location</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {temporaryListings.map((listing) => (
+                    <TableRow key={listing._id}>
+                      <TableCell>
+                        <Link href={`/dashboard/admin/temporary-listings/${listing._id}`} className="text-blue-600 hover:underline">
+                          {listing.title}
+                        </Link>
+                      </TableCell>
+                      <TableCell>{listing.type}</TableCell>
+                      <TableCell>{listing.location.area}, {listing.location.city}</TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleApproveListing(listing._id)}
+                          className="w-full sm:w-auto"
+                        >
+                          Approve
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+
+          <h2 className="text-xl font-semibold mb-4">Permanent Listings</h2>
+          {permanentListings.length === 0 ? (
+            <div className="text-center text-gray-500 text-lg">
+              No permanent listings to manage.
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Title</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Location</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {permanentListings.map((listing) => (
+                    <TableRow key={listing._id}>
+                      <TableCell>
+                        <Link href={`/listings/${listing._id}`} className="text-blue-600 hover:underline">
+                          {listing.title}
+                        </Link>
+                      </TableCell>
+                      <TableCell>{listing.type}</TableCell>
+                      <TableCell>{listing.location.area}, {listing.location.city}</TableCell>
+                      <TableCell>
+                        {listing.isApproved && !listing.isBanned && <Badge variant="default">Approved</Badge>}
+                        {!listing.isApproved && !listing.isBanned && <Badge variant="secondary">Pending</Badge>}
+                        {listing.isBanned && <Badge variant="destructive">Banned</Badge>}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex flex-col space-y-2 items-end sm:flex-row sm:space-y-0 sm:space-x-2">
+                          {!listing.isBanned && (
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleStatusChange(listing._id, "banned")}
+                              className="w-full sm:w-auto"
+                            >
+                              Ban
+                            </Button>
+                          )}
+                          {listing.isBanned && (
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              onClick={() => handleStatusChange(listing._id, "approved")}
+                              className="w-full sm:w-auto"
+                            >
+                              Unban
+                            </Button>
+                          )}
+                          {listing.isApproved && !listing.isBanned && listing.type !== "sold" && listing.type !== "rented" && (
+                            <>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleMarkStatus(listing._id, "sold")}
+                                className="w-full sm:w-auto"
+                              >
+                                Mark Sold
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleMarkStatus(listing._id, "rented")}
+                                className="w-full sm:w-auto"
+                              >
+                                Mark Rented
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </CardContent>
       </Card>

@@ -12,7 +12,7 @@ export async function setAuthCookie(response: NextResponse, firebaseUid: string)
   response.cookies.set("auth-token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: "lax",
     maxAge: 7 * 24 * 60 * 60, // 7 days
     path: "/",
   });

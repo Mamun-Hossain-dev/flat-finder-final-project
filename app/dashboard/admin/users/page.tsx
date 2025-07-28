@@ -7,20 +7,29 @@ import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import Image from "next/image";
+import { Label } from "@/components/ui/label";
 
 interface User {
   _id: string;
   name: string;
   email: string;
+  phone: string;
   role: string;
   isBanned: boolean;
-  warnings: { type: string; timestamp: string }[];
+  warnings: { type: string; reason: string; date: string }[];
+  nidNumber?: string;
+  nidImage?: string;
+  profileImage?: string;
 }
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showUserDetailsModal, setShowUserDetailsModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const { toast } = useToast();
 
   const fetchUsers = async () => {
@@ -48,6 +57,11 @@ export default function AdminUsersPage() {
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  const handleViewDetails = (user: User) => {
+    setSelectedUser(user);
+    setShowUserDetailsModal(true);
+  };
 
   const handleAssignCard = async (userId: string, cardType: "yellow" | "red") => {
     try {
@@ -106,7 +120,8 @@ export default function AdminUsersPage() {
               No users to manage.
             </div>
           ) : (
-            <Table>
+            <div className="overflow-x-auto">
+              <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
@@ -138,7 +153,14 @@ export default function AdminUsersPage() {
                       ))}
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex justify-end space-x-2">
+                      <div className="flex flex-wrap justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleViewDetails(user)}
+                        >
+                          View Details
+                        </Button>
                         <Button
                           variant="outline"
                           size="sm"
@@ -159,9 +181,101 @@ export default function AdminUsersPage() {
                 ))}
               </TableBody>
             </Table>
+            </div>
           )}
         </CardContent>
       </Card>
+
+      {/* User Details Modal */}
+      <Dialog open={showUserDetailsModal} onOpenChange={setShowUserDetailsModal}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>User Details</DialogTitle>
+            <DialogDescription>
+              View the complete profile information for this user.
+            </DialogDescription>
+          </DialogHeader>
+          {selectedUser && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
+              <div className="col-span-1 md:col-span-2 flex justify-center mb-4">
+                {selectedUser.profileImage ? (
+                  <Image
+                    src={selectedUser.profileImage}
+                    alt={selectedUser.name}
+                    width={120}
+                    height={120}
+                    className="rounded-full object-cover border-2 border-blue-500"
+                  />
+                ) : (
+                  <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-center p-2">
+                    No Profile Image
+                  </div>
+                )}
+              </div>
+
+              <div className="col-span-1">
+                <p className="font-medium">Name:</p>
+                <p>{selectedUser.name}</p>
+              </div>
+              <div className="col-span-1">
+                <p className="font-medium">Email:</p>
+                <p>{selectedUser.email}</p>
+              </div>
+              <div className="col-span-1">
+                <p className="font-medium">Phone:</p>
+                <p>{selectedUser.phone || "N/A"}</p>
+              </div>
+              <div className="col-span-1">
+                <p className="font-medium">Role:</p>
+                <p>{selectedUser.role}</p>
+              </div>
+              <div className="col-span-1">
+                <p className="font-medium">NID Number:</p>
+                <p>{selectedUser.nidNumber || "N/A"}</p>
+              </div>
+
+              <div className="col-span-1 md:col-span-2 mt-4">
+                <p className="font-medium mb-2">NID Image:</p>
+                {selectedUser.nidImage ? (
+                  <Image
+                    src={selectedUser.nidImage}
+                    alt="NID Image"
+                    width={300}
+                    height={200}
+                    className="rounded-lg object-contain border border-gray-300"
+                  />
+                ) : (
+                  <div className="w-full h-48 bg-gray-200 flex items-center justify-center text-gray-500 text-center p-4 rounded-lg">
+                    No NID Image Available
+                  </div>
+                )}
+              </div>
+
+              <div className="col-span-1">
+                <p className="font-medium">Banned:</p>
+                <p>{selectedUser.isBanned ? "Yes" : "No"}</p>
+              </div>
+              <div className="col-span-1">
+                <p className="font-medium">Warnings:</p>
+                <p>
+                  {selectedUser.warnings.length > 0
+                    ? selectedUser.warnings
+                        .map((w) => `${w.type} (${new Date(w.date).toLocaleDateString()})`)
+                        .join(", ")
+                    : "None"}
+                </p>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button type="button" variant="secondary">
+                Close
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

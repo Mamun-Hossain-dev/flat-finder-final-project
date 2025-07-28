@@ -59,7 +59,7 @@ export default function Header() {
     { name: "Home", href: "/", icon: Home },
     { name: "All Listings", href: "/listings", icon: Building },
     { name: "How It Works", href: "/how-it-works", icon: HelpCircle },
-    { name: "Contact", href: "/contact", icon: Phone },
+    { name: "Contact Us", href: "/contact", icon: Phone },
   ];
 
   const getInitials = (name: string | null | undefined) => {
@@ -97,7 +97,7 @@ export default function Header() {
               <Link
                 key={item.name}
                 href={item.href}
-                className={`text-gray-600 hover:text-blue-600 font-medium transition-colors ${
+                className={`text-gray-600 hover:text-blue-600 font-normal transition-colors ${
                   isActive(item.href) ? "text-blue-600 underline" : ""
                 }`}
               >
@@ -200,7 +200,7 @@ export default function Header() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center space-x-2 text-gray-600 hover:text-blue-600 font-medium ${
+                  className={`flex items-center space-x-2 text-gray-600 hover:text-blue-600 font-normal ${
                     isActive(item.href) ? "text-blue-600 underline" : ""
                   }`}
                   onClick={() => setIsMenuOpen(false)}

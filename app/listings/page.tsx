@@ -7,7 +7,13 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Home, Bed, Bath, Ruler, DollarSign, Tag } from "lucide-react";
 
@@ -29,6 +35,7 @@ interface Listing {
   isApproved: boolean;
 }
 
+// eslint-disable-next-line react/display-name
 const ListingsPage = memo(() => {
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
@@ -139,7 +146,10 @@ const ListingsPage = memo(() => {
       <h1 className="text-3xl font-bold mb-6">Available Listings</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <Select onValueChange={(value) => handleFilterChange("type", value)} value={filters.type}>
+        <Select
+          onValueChange={(value) => handleFilterChange("type", value)}
+          value={filters.type}
+        >
           <SelectTrigger>
             <SelectValue placeholder="Filter by Type" />
           </SelectTrigger>
@@ -178,7 +188,9 @@ const ListingsPage = memo(() => {
           <Label htmlFor="isPremium">Premium Listings</Label>
         </div>
         <Button onClick={applyFilters}>Apply Filters</Button>
-        <Button variant="outline" onClick={clearFilters}>Clear Filters</Button>
+        <Button variant="outline" onClick={clearFilters}>
+          Clear Filters
+        </Button>
       </div>
 
       {listings.length === 0 ? (
@@ -200,22 +212,54 @@ const ListingsPage = memo(() => {
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
                   {listing.isPremium && (
-                    <span className="absolute top-2 left-2 rounded-md bg-yellow-500 px-2 py-1 text-xs font-medium text-white">
+                    <span className="absolute top-2 left-2 rounded-md bg-yellow-500 px-2 py-1 text-xs font-medium text-white z-10">
                       Premium
                     </span>
                   )}
+                  {listing.type === "sold" && (
+                    <span className="absolute top-2 right-2 rounded-md bg-red-600 px-2 py-1 text-xs font-medium text-white z-10">
+                      Sold
+                    </span>
+                  )}
+                  {!listing.available && listing.type !== "sold" && (
+                    <span className="absolute top-2 right-2 rounded-md bg-gray-600 px-2 py-1 text-xs font-medium text-white z-10">
+                      Unavailable
+                    </span>
+                  )}
+                  {(listing.type === "sold" || !listing.available) && (
+                    <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-0"></div>
+                  )}
                 </div>
                 <CardContent className="p-4">
-                  <CardTitle className="text-xl font-semibold mb-2">{listing.title}</CardTitle>
-                  <p className="text-gray-600 text-sm mb-2">{listing.location.area}, {listing.location.city}</p>
+                  <CardTitle className="text-xl font-semibold mb-2">
+                    {listing.title}
+                  </CardTitle>
+                  <p className="text-gray-600 text-sm mb-2">
+                    {listing.location.area}, {listing.location.city}
+                  </p>
                   <div className="flex items-center justify-between text-gray-700 text-lg font-bold mb-3">
-                    <span className="flex items-center"><DollarSign className="w-4 h-4 mr-1" />{listing.price.toLocaleString()}</span>
-                    <span className="flex items-center"><Tag className="w-4 h-4 mr-1" />{listing.type}</span>
+                    <span className="flex items-center">
+                      <DollarSign className="w-4 h-4 mr-1" />
+                      {listing.price.toLocaleString()}
+                    </span>
+                    <span className="flex items-center">
+                      <Tag className="w-4 h-4 mr-1" />
+                      {listing.type}
+                    </span>
                   </div>
                   <div className="flex items-center space-x-4 text-gray-600 text-sm">
-                    <span className="flex items-center"><Bed className="w-4 h-4 mr-1" />{listing.bedrooms} Beds</span>
-                    <span className="flex items-center"><Bath className="w-4 h-4 mr-1" />{listing.bathrooms} Baths</span>
-                    <span className="flex items-center"><Ruler className="w-4 h-4 mr-1" />{listing.size} sqft</span>
+                    <span className="flex items-center">
+                      <Bed className="w-4 h-4 mr-1" />
+                      {listing.bedrooms} Beds
+                    </span>
+                    <span className="flex items-center">
+                      <Bath className="w-4 h-4 mr-1" />
+                      {listing.bathrooms} Baths
+                    </span>
+                    <span className="flex items-center">
+                      <Ruler className="w-4 h-4 mr-1" />
+                      {listing.size} sqft
+                    </span>
                   </div>
                 </CardContent>
               </Card>

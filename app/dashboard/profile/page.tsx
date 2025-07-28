@@ -76,6 +76,10 @@ export default function ProfilePage() {
       }
 
       await refreshProfile();
+      toast({
+        title: "Success",
+        description: "Profile updated successfully!",
+      });
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -131,6 +135,7 @@ export default function ProfilePage() {
                   <AvatarImage
                     src={profileImage || userProfile.profileImage}
                     alt={userProfile.name}
+                    sizes="(max-width: 768px) 100px, 120px"
                   />
                 ) : (
                   <AvatarFallback className="bg-blue-100 text-blue-600 text-xl">
@@ -179,7 +184,7 @@ export default function ProfilePage() {
                     type="button"
                     variant="outline"
                     onClick={() => open()}
-                    className="w-full"
+                    className="w-full text-center"
                   >
                     <Upload className="w-4 h-4 mr-2" />
                     Update Photo
@@ -297,7 +302,7 @@ export default function ProfilePage() {
                         type="button"
                         variant="outline"
                         onClick={() => open()}
-                        className="w-full"
+                        className="w-full text-center"
                       >
                         <Upload className="w-4 h-4 mr-2" />
                         {nidImage || userProfile.nidImage
@@ -305,7 +310,7 @@ export default function ProfilePage() {
                           : "Upload NID/Passport"}
                       </Button>
                       {(nidImage || userProfile.nidImage) && (
-                        <div className="text-sm text-green-600">
+                        <div className="text-sm text-green-600 text-center mt-2">
                           ✓ NID image uploaded
                         </div>
                       )}

@@ -12,11 +12,13 @@ const Navigations = () => {
 
   return (
     <nav className="flex items-center space-x-4">
-      <Link href="/dashboard">
-        <Button variant={pathname === "/dashboard" ? "secondary" : "ghost"}>
-          Dashboard
-        </Button>
-      </Link>
+      {user && user.role !== "admin" && (
+        <Link href="/dashboard">
+          <Button variant={pathname === "/dashboard" ? "secondary" : "ghost"}>
+            Dashboard
+          </Button>
+        </Link>
+      )}
       {user && (
         <Link href="/dashboard/profile">
           <Button

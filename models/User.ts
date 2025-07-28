@@ -12,14 +12,14 @@ const UserSchema = new mongoose.Schema(
     firebaseUid: { type: String, required: true, unique: true }, // Firebase UID
     email: { type: String, required: true, unique: true },
     name: { type: String, required: true },
-    phone: { type: String },
+    phone: { type: String, required: true, unique: true },
     role: {
       type: String,
       enum: ["admin", "buyer", "seller", "tenant"],
       default: "buyer",
     },
     isVerified: { type: Boolean, default: false },
-    nidNumber: String,
+    nidNumber: { type: String, unique: true },
     nidImage: String,
     profileImage: String,
     warnings: [WarningSchema],

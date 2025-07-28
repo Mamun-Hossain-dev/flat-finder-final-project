@@ -20,20 +20,21 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Home, Bed, Bath, Ruler, DollarSign, Tag, Eye } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth"; // Import useAuth
 
 interface Listing {
   _id: string;
   title: string;
   description: string;
   images: string[];
-  type: "sale" | "rent" | "bachelor";
+  type: "sale" | "rent" | "bachelor" | "sold";
   location: { area: string; city: string };
   price: number;
   bedrooms: number;
   bathrooms: number;
   size: number;
   isPremium: boolean;
-  ownerId: { name: string; email: string; phone: string };
+  ownerId: { _id: string; name: string; email: string; phone: string };
   views: number;
   available: boolean;
   isApproved: boolean;
@@ -46,6 +47,8 @@ const ListingDetailsPage = memo(() => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const { userProfile } = useAuth(); // Get userProfile from useAuth
+  console.log("User Profile:", userProfile); // Debugging line
 
   const fetchListing = useCallback(async () => {
     if (!id) {
@@ -95,19 +98,33 @@ const ListingDetailsPage = memo(() => {
   }, [fetchListing]);
 
   const handleBookAppointment = useCallback(() => {
-    // Add your booking logic here
+    if (!listing || !userProfile?._id) {
+      toast({
+        title: "Error",
+        description: "Could not book appointment. Missing listing or user ID.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const adminPhoneNumber = "01640571091"; // Admin WhatsApp number
+    const message = `Hello, I'm interested in booking an appointment for the flat listing: ${listing.title} (ID: ${listing._id}).\nLocation: ${listing.location?.area}, ${listing.location?.city}.\nPrice: ${listing.price?.toLocaleString()}.\nDetails: ${listing.bedrooms} Beds, ${listing.bathrooms} Baths, ${listing.size} sqft, Type: ${listing.type}.\nMy details are - Name: ${userProfile.name}, Email: ${userProfile.email}, Phone: ${userProfile.phone}, Role: ${userProfile.role}.`;
+    const whatsappUrl = `https://wa.me/${adminPhoneNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, "_blank");
+
     toast({
-      title: "Booking Request",
-      description: "Your appointment request has been sent to the owner.",
+      title: "Booking Request Sent",
+      description: "You've been redirected to WhatsApp to contact the admin.",
     });
-  }, [toast]);
+  }, [listing, userProfile, toast]);
 
   const handleContactLandlord = useCallback(() => {
-    // Add your contact logic here
-    if (listing?.ownerId?.email) {
-      window.location.href = `mailto:${listing.ownerId.email}`;
-    }
-  }, [listing]);
+    // This function is no longer used as seller info is hidden
+  }, []);
+
+  const handleWhatsAppContact = useCallback(() => {
+    // This function is no longer used as seller info is hidden
+  }, []);
 
   if (loading) {
     return (
@@ -144,7 +161,13 @@ const ListingDetailsPage = memo(() => {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <Card className="max-w-5xl mx-auto">
+      <Card
+        className={`max-w-5xl mx-auto ${
+          listing.type === "sold" || !listing.available
+            ? "opacity-70 grayscale"
+            : ""
+        }`}
+      >
         <CardHeader>
           <div className="flex flex-col gap-2">
             <CardTitle className="text-3xl font-bold">
@@ -156,6 +179,16 @@ const ListingDetailsPage = memo(() => {
             {listing.isPremium && (
               <span className="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20 w-fit">
                 Premium Listing
+              </span>
+            )}
+            {listing.type === "sold" && (
+              <span className="inline-flex items-center rounded-md bg-red-600 px-2 py-1 text-xs font-medium text-white w-fit">
+                Sold
+              </span>
+            )}
+            {!listing.available && listing.type !== "sold" && (
+              <span className="inline-flex items-center rounded-md bg-gray-600 px-2 py-1 text-xs font-medium text-white w-fit">
+                Unavailable
               </span>
             )}
           </div>
@@ -264,41 +297,19 @@ const ListingDetailsPage = memo(() => {
             </div>
           </div>
 
-          {/* Owner Information */}
+          {/* Booking/Contact Section */}
           <div className="border-t pt-6">
-            <h3 className="text-xl font-semibold mb-4">Contact Information</h3>
-            <div className="space-y-2 mb-4">
-              <p className="text-gray-700">
-                <span className="font-medium">Name:</span>{" "}
-                {listing.ownerId?.name || "N/A"}
-              </p>
-              <p className="text-gray-700">
-                <span className="font-medium">Email:</span>{" "}
-                {listing.ownerId?.email || "N/A"}
-              </p>
-              <p className="text-gray-700">
-                <span className="font-medium">Phone:</span>{" "}
-                {listing.ownerId?.phone || "N/A"}
-              </p>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button
-                onClick={handleBookAppointment}
-                className="flex-1 sm:flex-initial"
-                disabled={!listing.available}
-              >
-                Book Appointment
-              </Button>
-              <Button
-                variant="outline"
-                onClick={handleContactLandlord}
-                className="flex-1 sm:flex-initial"
-                disabled={!listing.ownerId?.email}
-              >
-                Contact Owner
-              </Button>
-            </div>
+            {userProfile && (
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button
+                  onClick={handleBookAppointment}
+                  className="flex-1 sm:flex-initial"
+                  disabled={!listing.available}
+                >
+                  Book Appointment via WhatsApp
+                </Button>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

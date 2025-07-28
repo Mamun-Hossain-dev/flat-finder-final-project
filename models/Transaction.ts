@@ -14,7 +14,7 @@ export interface ITransaction extends Document {
 const TransactionSchema: Schema = new Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    type: { type: String, required: true, enum: ['listing_premium', 'appointment_fee', 'other'] },
+    type: { type: String, required: true },
     amount: { type: Number, required: true },
     currency: { type: String, required: true, default: 'BDT' },
     status: { type: String, required: true, default: 'pending', enum: ['pending', 'completed', 'failed'] },

@@ -231,7 +231,7 @@ export default function EditListingPage() {
                 <div className="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {watchedImages.map((url, index) => (
                     <div key={index} className="relative w-full h-32">
-                      <Image src={url} alt={`Uploaded image ${index + 1}`} fill style={{ objectFit: "cover" }} className="rounded-md" />
+                      <Image src={url} alt={`Uploaded image ${index + 1}`} fill style={{ objectFit: "cover" }} className="rounded-md" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" />
                     </div>
                   ))}
                 </div>

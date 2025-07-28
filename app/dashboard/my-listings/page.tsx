@@ -152,6 +152,7 @@ export default function MyListingsPage() {
                     fill
                     style={{ objectFit: "cover" }}
                     className="rounded-t-lg"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
                   {listing.isPremium && (
                     <span className="absolute top-2 left-2 rounded-md bg-yellow-500 px-2 py-1 text-xs font-medium text-white">
@@ -171,15 +172,15 @@ export default function MyListingsPage() {
                     <span className="flex items-center"><Bath className="w-4 h-4 mr-1" />{listing.bathrooms} Baths</span>
                     <span className="flex items-center"><Ruler className="w-4 h-4 mr-1" />{listing.size} sqft</span>
                   </div>
-                  <div className="mt-4 flex justify-end space-x-2">
-                    <Button variant="outline" size="sm" asChild>
+                  <div className="mt-4 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2">
+                    <Button variant="outline" size="sm" asChild className="w-full sm:w-auto">
                       <Link href={`/dashboard/edit-listing/${listing._id}`}>
                         <Edit className="w-4 h-4 mr-2" />Edit
                       </Link>
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button variant="destructive" size="sm">
+                        <Button variant="destructive" size="sm" className="w-full sm:w-auto">
                           <Trash2 className="w-4 h-4 mr-2" />Delete
                         </Button>
                       </AlertDialogTrigger>

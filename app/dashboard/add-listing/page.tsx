@@ -16,6 +16,7 @@ import { CldUploadWidget } from "next-cloudinary";
 import Image from "next/image";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import PaymentForm from "@/components/PaymentForm";
 
 const schema = yup.object().shape({
   title: yup.string().required("Title is required"),
@@ -30,6 +31,7 @@ const schema = yup.object().shape({
   bathrooms: yup.number().typeError("Bathrooms must be a number").integer("Bathrooms must be an integer").positive("Bathrooms must be positive").required("Bathrooms is required"),
   size: yup.number().typeError("Size must be a number").positive("Size must be positive").required("Size is required"),
   images: yup.array().of(yup.string()).min(1, "At least one image is required").required("Images are required"),
+  isPremium: yup.boolean().required("Premium status is required"),
 });
 
 type FormData = yup.InferType<typeof schema>;
@@ -39,18 +41,36 @@ export default function AddListingPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [calculatedFee, setCalculatedFee] = useState<number | null>(null);
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
 
   const { register, handleSubmit, formState: { errors }, setValue, watch, control } = useForm<FormData>({
     resolver: yupResolver(schema),
     defaultValues: {
       images: [],
       location: { area: "", city: "" },
+      isPremium: false, // Default to normal
     },
   });
 
   const { toast } = useToast();
 
   const watchedImages = watch("images");
+  const watchedType = watch("type");
+  const watchedPrice = watch("price");
+
+  // Effect to automatically determine isPremium based on price and type
+  useEffect(() => {
+    if (watchedPrice && watchedType) {
+      let newIsPremium = false;
+      if (watchedType === "sale") {
+        newIsPremium = watchedPrice >= 7000000; // 70 lakh
+      } else if (watchedType === "rent") {
+        newIsPremium = watchedPrice >= 35000;
+      }
+      setValue("isPremium", newIsPremium);
+    }
+  }, [watchedPrice, watchedType, setValue]);
 
   useEffect(() => {
     if (!authLoading && (!userProfile || userProfile.role !== "seller")) {
@@ -63,9 +83,19 @@ export default function AddListingPage() {
   }, [imageUrls, setValue]);
 
   const onSubmit = async (data: FormData) => {
+    if (!userProfile) {
+      toast({
+        title: "Error",
+        description: "User not logged in.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      const response = await fetch("/api/listings", {
+      // Save temporary listing
+      const tempListingResponse = await fetch("/api/temporary-listings", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -73,30 +103,58 @@ export default function AddListingPage() {
         body: JSON.stringify(data),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("API Error Response:", errorData); // Added logging
-        throw new Error(errorData.error || "Failed to create listing");
+      if (!tempListingResponse.ok) {
+        const errorData = await tempListingResponse.json();
+        throw new Error(errorData.error || "Failed to save temporary listing.");
+      }
+      const tempListingData = await tempListingResponse.json();
+      console.log("Full Temporary Listing API Response:", tempListingData); // Added log
+      const { _id: temporaryListingId } = tempListingData;
+      console.log("Temporary Listing ID obtained from API:", temporaryListingId); // Added log
+
+      let listingTypeForFee = data.type;
+      if (data.type === "sale") {
+        listingTypeForFee = data.isPremium ? "premium_sell" : "normal_sell";
+      } else if (data.type === "rent") {
+        listingTypeForFee = data.isPremium ? "premium_rent" : "normal_rent";
+      } else if (data.type === "bachelor") {
+        listingTypeForFee = "bachelor_room";
       }
 
-      const responseData = await response.json(); // Added logging
-      console.log("API Success Response:", responseData); // Added logging
-
-      toast({
-        title: "Success!",
-        description: "Listing created successfully.",
+      const feeResponse = await fetch("/api/payment/calculate-fee", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: userProfile._id,
+          type: listingTypeForFee,
+          temporaryListingId, // Pass temporary listing ID to payment init
+        }),
       });
-      router.push("/dashboard/my-listings"); // Redirect to seller's listings
+
+      if (!feeResponse.ok) {
+        const errorData = await feeResponse.json();
+        throw new Error(errorData.error || "Failed to calculate fee.");
+      }
+
+      const { fee } = await feeResponse.json();
+      setCalculatedFee(fee);
+      setShowPaymentForm(true);
+
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.message || "An unexpected error occurred.",
+        description: error.message || "An unexpected error occurred during fee calculation.",
         variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  // handlePaymentSuccess function is removed as its logic will be moved to /api/payment/success/route.ts
+  const handlePaymentSuccess = async (data: FormData) => {};
 
   const onUploadSuccess = (result: any) => {
     const newImageUrl = result.info.secure_url;
@@ -201,16 +259,38 @@ export default function AddListingPage() {
                 <div className="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {watchedImages.map((url, index) => (
                     <div key={index} className="relative w-full h-32">
-                      <Image src={url} alt={`Uploaded image ${index + 1}`} fill style={{ objectFit: "cover" }} className="rounded-md" />
+                      <Image src={url} alt={`Uploaded image ${index + 1}`} fill style={{ objectFit: "cover" }} className="rounded-md" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" />
                     </div>
                   ))}
                 </div>
                 {errors.images && <p className="text-red-500 text-sm">{errors.images.message}</p>}
               </div>
 
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? "Adding Listing..." : "Add Listing"}
-              </Button>
+              {!showPaymentForm && (
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  {isSubmitting ? "Calculating Fee..." : "Proceed to Payment"}
+                </Button>
+              )}
+
+              {showPaymentForm && calculatedFee !== null && userProfile && (
+                <div className="mt-6 p-4 border rounded-md bg-blue-50">
+                  <h3 className="text-lg font-semibold mb-2">Payment Required</h3>
+                  <p className="mb-4">Your listing fee is: ৳{calculatedFee}</p>
+                  <PaymentForm
+                    listingType={watch("isPremium") ? `premium_${watch("type")}` : `normal_${watch("type")}`}
+                    amount={calculatedFee}
+                    userId={userProfile._id}
+                    userInfo={{
+                      name: userProfile.name,
+                      email: userProfile.email,
+                      phone: userProfile.phone,
+                    }}
+                  />
+                  <Button variant="outline" onClick={() => setShowPaymentForm(false)} className="mt-2 w-full">
+                    Cancel Payment
+                  </Button>
+                </div>
+              )}
             </form>
           </CardContent>
         </Card>

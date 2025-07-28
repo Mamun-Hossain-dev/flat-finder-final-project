@@ -78,7 +78,8 @@ export default function AdminTransactionsPage() {
               No transactions found.
             </div>
           ) : (
-            <Table>
+            <div className="overflow-x-auto">
+              <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>User</TableHead>
@@ -116,6 +117,7 @@ export default function AdminTransactionsPage() {
                 ))}
               </TableBody>
             </Table>
+            </div>
           )}
         </CardContent>
       </Card>

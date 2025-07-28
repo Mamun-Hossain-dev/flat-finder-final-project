@@ -6,7 +6,7 @@ import { verifyAuthToken } from "@/lib/auth-cookies";
 export async function PUT(request: NextRequest) {
   await dbConnect();
   try {
-    const firebaseUid = await verifyAuthToken(request);
+    const { firebaseUid } = await verifyAuthToken(request);
     if (!firebaseUid) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -17,12 +17,15 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
+    console.log("Request body:", body); // Add this line for debugging
     // Only allow updating specific fields for security
     const updates: { [key: string]: any } = {};
     if (body.name) updates.name = body.name;
     if (body.phone) updates.phone = body.phone;
     if (body.profileImage) updates.profileImage = body.profileImage;
-    // Add other fields that can be updated by the user
+    if (body.nidNumber) updates.nidNumber = body.nidNumber;
+    if (body.nidImage) updates.nidImage = body.nidImage;
+    console.log("Updates object:", updates); // Add this line for debugging
 
     const updatedUser = await User.findByIdAndUpdate(user._id, updates, { new: true });
 
@@ -48,8 +51,18 @@ export async function PUT(request: NextRequest) {
     };
 
     return NextResponse.json(userResponse);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating profile:", error);
+    if (error.code === 11000) {
+      let field = "unknown";
+      if (error.keyPattern.email) field = "email";
+      else if (error.keyPattern.phone) field = "phone number";
+      else if (error.keyPattern.nidNumber) field = "NID number";
+      return NextResponse.json({ error: `This ${field} is already in use.` }, { status: 409 });
+    } else if (error.name === "ValidationError") {
+      const errors = Object.keys(error.errors).map(key => error.errors[key].message);
+      return NextResponse.json({ error: errors.join(", ") }, { status: 400 });
+    }
     return NextResponse.json({ error: "Failed to update profile" }, { status: 500 });
   }
 }

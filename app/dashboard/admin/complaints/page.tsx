@@ -108,7 +108,8 @@ export default function AdminComplaintsPage() {
               No complaints to manage.
             </div>
           ) : (
-            <Table>
+            <div className="overflow-x-auto">
+              <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Complainant</TableHead>
@@ -146,7 +147,7 @@ export default function AdminComplaintsPage() {
                         }
                         value={complaint.status}
                       >
-                        <SelectTrigger className="w-[180px]">
+                        <SelectTrigger className="w-full sm:w-[180px]">
                           <SelectValue placeholder="Update Status" />
                         </SelectTrigger>
                         <SelectContent>
@@ -161,6 +162,7 @@ export default function AdminComplaintsPage() {
                 ))}
               </TableBody>
             </Table>
+            </div>
           )}
         </CardContent>
       </Card>
