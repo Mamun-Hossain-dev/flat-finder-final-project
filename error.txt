@@ -1,35 +1,72 @@
-> flat-finder@0.1.0 build
-> next build
-
-   ▲ Next.js 15.4.4
-   - Environments: .env.local
-
-   Creating an optimized production build ...
- ✓ Compiled successfully in 8.0s
-
-./app/api/admin/temporary-listings/[id]/approve/route.ts
-43:13  Warning: '_id' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-43:18  Warning: '__v' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-
-./app/api/auth/logout/route.ts
-4:28  Warning: 'request' is defined but never used.  @typescript-eslint/no-unused-vars
-
-./app/api/users/[id]/assign-card/route.ts
-3:16  Warning: 'IUser' is defined but never used.  @typescript-eslint/no-unused-vars
-
-info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
-Failed to compile.
-
-./components/ui/carousel.tsx:4:60
-Type error: '"embla-carousel-react"' has no exported member named 'EmblaCarouselAPIType'. Did you mean 'UseEmblaCarouselType'?
-
-  2 |
-  3 | import * as React from "react";
-> 4 | import useEmblaCarousel, { type UseEmblaCarouselType, type EmblaCarouselAPIType } from "embla-carousel-react";
-    |                                                            ^
-  5 | import { ArrowLeft, ArrowRight } from "lucide-react";
-  6 |
-  7 | import { cn } from "@/lib/utils";
-Next.js build worker exited with code: 1 and signal: null
-PS C:\Users\USER\Desktop\Saraf-project\flat-finder>
-PS C:\Users\USER\Desktop\Saraf-project\flat-finder>
+ GET /api/bookings/my-bookings 200 in 260ms
+Middleware: authToken from cookies: Present
+Auth token successfully verified. Decoded payload: {
+  firebaseUid: 'L4p5w20xMBgTs6neJg5Cg0lT5jQ2',
+  iat: 1753771814,
+  exp: 1754376614
+}
+Middleware: isValidToken: Valid
+ GET /dashboard/my-bookings 200 in 271ms
+ GET /favicon.ico?favicon.45db1c09.ico 200 in 352ms
+ GET /api/auth/profile/L4p5w20xMBgTs6neJg5Cg0lT5jQ2 200 in 129ms
+Token verification successful: {
+  firebaseUid: 'L4p5w20xMBgTs6neJg5Cg0lT5jQ2',
+  iat: 1753771814,
+  exp: 1754376614
+}
+Fetching bookings for buyerId: new ObjectId('688707f7107ee09726639674')
+Found bookings: 2
+Bookings data: [
+  {
+    "_id": "68886f26ff1a08583bab3a2f",
+    "buyerId": "688707f7107ee09726639674",
+    "listingId": {
+      "location": {
+        "area": "Dhanmondi",
+        "city": "dhaka"
+      },
+      "_id": "6887cc3672ba255997aa73b8",
+      "title": "Family Apartment with Lake View",
+      "images": [
+        "https://res.cloudinary.com/dlcpaiziv/image/upload/v1753730098/wd3xq78stmmv4pwuqzsw.jpg",
+        "https://res.cloudinary.com/dlcpaiziv/image/upload/v1753730098/nobunecpnirazi4bqnqr.jpg"
+      ],
+      "type": "sale",
+      "price": 34342322
+    },
+    "amount": 200,
+    "bookingType": "normal",
+    "status": "completed",
+    "paymentReferenceId": "4de100ff6ec952202f9b",
+    "bookedAt": "2025-07-29T06:50:14.751Z",
+    "__v": 0
+  },
+  {
+    "_id": "68886e10ff1a08583bab39e4",
+    "buyerId": "688707f7107ee09726639674",
+    "listingId": {
+      "location": {
+        "area": "Uttara",
+        "city": "Dhaka"
+      },
+      "_id": "6887cb6472ba255997aa737a",
+      "title": "Premium 3-Bedroom Apartment in Uttara",
+      "images": [
+        "https://res.cloudinary.com/dlcpaiziv/image/upload/v1753729887/fhkrwq1tqhtyuxwlivge.jpg",
+        "https://res.cloudinary.com/dlcpaiziv/image/upload/v1753729888/zixds9vwvhtweqc2pphp.jpg",
+        "https://res.cloudinary.com/dlcpaiziv/image/upload/v1753729888/uksppukriq2vk6tvjqka.jpg",
+        "https://res.cloudinary.com/dlcpaiziv/image/upload/v1753729888/c2irrakktkuq6k0vjonv.jpg",
+        "https://res.cloudinary.com/dlcpaiziv/image/upload/v1753729888/sexthw1ajezem6m9deg2.jpg"
+      ],
+      "type": "sale",
+      "price": 120000
+    },
+    "amount": 100,
+    "bookingType": "normal",
+    "status": "pending",
+    "paymentReferenceId": "d6809aedaf807253270e",
+    "bookedAt": "2025-07-29T06:45:36.283Z",
+    "__v": 0
+  }
+]
+ GET /api/bookings/my-bookings 200 in 260ms

@@ -19,7 +19,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Home, Bed, Bath, Ruler, DollarSign, Tag, Eye, Phone, Mail } from "lucide-react";
+import { Home, Bed, Bath, Ruler, IndianRupee, Tag, Eye, Phone, Mail } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import PaymentForm from "@/components/PaymentForm"; // Import PaymentForm
 
@@ -142,10 +142,9 @@ const ListingDetailsPage = memo(() => {
 
     if (listing.type === "rent" || listing.type === "bachelor") {
       setShowSellerDetails(true);
-      openWhatsAppChat(); // Open WhatsApp directly for free listings
       toast({
-        title: "Seller Details & WhatsApp Unlocked",
-        description: "You can now contact the seller directly via WhatsApp.",
+        title: "Seller Details Unlocked",
+        description: "You can now contact the seller directly.",
       });
     } else if (listing.type === "sale") {
       try {
@@ -179,19 +178,55 @@ const ListingDetailsPage = memo(() => {
     }
   }, [listing, userProfile, toast, hasPaidForAppointment, openWhatsAppChat]);
 
-  const handlePaymentSuccess = useCallback(() => {
+  const handlePaymentSuccess = useCallback(async () => {
     setShowPaymentForm(false);
     setShowSellerDetails(true);
     setHasPaidForAppointment(true); // Mark as paid
     if (userProfile?._id && listing?._id) {
       localStorage.setItem(`paid_appointment_${userProfile._id}_${listing._id}`, "true");
+
+      // Create a booking record
+      try {
+        const response = await fetch("/api/bookings", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            'Authorization': `Bearer ${document.cookie.split('; ').find(row => row.startsWith('auth-token='))?.split('=')[1]}`,
+          },
+          body: JSON.stringify({
+            buyerId: userProfile._id,
+            listingId: listing._id,
+            amount: calculatedFee, // Use the calculated fee
+            bookingType: "normal", // Or "premium" based on your logic
+            paymentReferenceId: "dummy_ref_" + Date.now(), // Replace with actual payment gateway reference
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error("Failed to create booking record:", errorData.message);
+          toast({
+            title: "Booking Record Error",
+            description: "Payment successful, but failed to create booking record. Please contact support.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Payment Successful",
+            description: "Seller details are now visible and booking recorded. Redirecting to WhatsApp...",
+          });
+        }
+      } catch (error) {
+        console.error("Error creating booking record:", error);
+        toast({
+          title: "Booking Record Error",
+          description: "Payment successful, but an unexpected error occurred while creating booking record. Please contact support.",
+          variant: "destructive",
+        });
+      }
     }
-    toast({
-      title: "Payment Successful",
-      description: "Seller details are now visible. Redirecting to WhatsApp...",
-    });
     openWhatsAppChat(); // Redirect to WhatsApp after successful payment
-  }, [toast, userProfile, listing, openWhatsAppChat]);
+  }, [toast, userProfile, listing, openWhatsAppChat, calculatedFee]);
 
   const handlePaymentCancel = useCallback(() => {
     setShowPaymentForm(false);
@@ -312,9 +347,8 @@ const ListingDetailsPage = memo(() => {
               <h3 className="text-xl font-semibold mb-4">Property Details</h3>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <DollarSign className="w-5 h-5 text-green-600 flex-shrink-0" />
                   <span className="text-gray-700">
-                    <span className="font-medium">Price:</span> $
+                    <span className="font-medium">Price:</span> ৳
                     {listing.price?.toLocaleString() || "N/A"}
                   </span>
                 </div>
@@ -410,6 +444,8 @@ const ListingDetailsPage = memo(() => {
                     email: userProfile.email,
                     phone: userProfile.phone,
                   }}
+                  listingId={listing._id} // Pass listingId here
+                  isPremium={listing.isPremium} // Pass isPremium here
                   onPaymentSuccess={handlePaymentSuccess}
                   onPaymentCancel={handlePaymentCancel}
                 />

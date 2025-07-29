@@ -6,6 +6,7 @@ const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "fallback-
 export async function setAuthCookie(response: NextResponse, firebaseUid: string): Promise<NextResponse> {
   const token = await new jose.SignJWT({ firebaseUid })
     .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
     .setExpirationTime("7d")
     .sign(JWT_SECRET);
 
@@ -20,7 +21,13 @@ export async function setAuthCookie(response: NextResponse, firebaseUid: string)
 }
 
 export function clearAuthCookie(response: NextResponse) {
-  response.cookies.delete("auth-token");
+  response.cookies.set("auth-token", "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 0, // Expire immediately
+    path: "/",
+  });
 }
 
 export async function verifyAuthToken(request: NextRequest): Promise<jose.JWTPayload | null> {
@@ -43,13 +50,22 @@ export async function verifyAuthToken(request: NextRequest): Promise<jose.JWTPay
 
 export async function verifyToken(token: string | undefined): Promise<jose.JWTPayload | null> {
   if (!token) {
+    console.log("No token provided to verifyToken");
     return null;
   }
+  
   try {
     const { payload } = await jose.jwtVerify(token, JWT_SECRET);
+    console.log("Token verification successful:", payload);
     return payload;
   } catch (error) {
     console.error("Token verification failed:", error);
+    // Log more specific error details
+    if (error instanceof jose.errors.JWTExpired) {
+      console.error("Token has expired");
+    } else if (error instanceof jose.errors.JWTInvalid) {
+      console.error("Token is invalid");
+    }
     return null;
   }
 }

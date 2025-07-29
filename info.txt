@@ -1,99 +1,44 @@
-import { NextRequest, NextResponse } from "next/server";
-import dbConnect from "@/lib/dbConnect";
-import TemporaryListing from "@/models/TemporaryListing";
-import FlatListing from "@/models/FlatListing";
-import User from "@/models/User";
-import { verifyToken } from "@/lib/auth-cookies";
+🏠 Application Flow: Buyer Appointment Booking & Payment System
+In this application, the booking and payment flow works as follows:
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  await dbConnect();
+Property Selection & Appointment Booking:
+A buyer visits a listing and selects a flat that is available for sale. They then click the "Book Appointment" button to proceed.
 
-  try {
-    const token = request.cookies.get("auth-token")?.value;
-    const decodedToken = await verifyToken(token);
+Payment Processing:
+After clicking the button, the buyer is directed to the payment gateway to complete the booking fee. The system supports different booking types (e.g., Premium or Normal).
 
-    if (!decodedToken || !decodedToken.firebaseUid) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+Post-Payment Status Update:
+Upon successful payment, the buyer’s dashboard is automatically updated with a Pending Booking entry. This entry includes all relevant details such as:
 
-    const user = await User.findOne({ firebaseUid: decodedToken.firebaseUid });
+The selected flat/property
 
-    if (!user || user.role !== "admin") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
+Amount paid
 
-    // Await the params promise
-    const resolvedParams = await params;
-    const id = resolvedParams.id;
+Booking type (Premium/Normal)
 
-    if (!id) {
-      return NextResponse.json(
-        { error: "Temporary listing ID is required" },
-        { status: 400 }
-      );
-    }
+Current status (initially set as Pending)
 
-    const temporaryListing = await TemporaryListing.findById(id);
+Buyer Booking Overview:
+Buyers can view all their bookings by clicking on "View Bookings". This section displays:
 
-    if (!temporaryListing) {
-      return NextResponse.json(
-        { error: "Temporary listing not found" },
-        { status: 404 }
-      );
-    }
+Property details
 
-    // Create the permanent listing from the temporary one
-    const listingData = temporaryListing.toObject();
-    delete listingData._id; // Remove the _id so Mongoose generates a new one
-    delete listingData.__v; // Remove version key
+Booking date and time
 
-    const permanentListing = await FlatListing.create({
-      ...listingData,
-      isApproved: true, // Set to true upon admin approval
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+Payment amount
 
-    // Delete the temporary listing
-    await TemporaryListing.findByIdAndDelete(id);
+Booking type
 
-    return NextResponse.json({
-      message: "Listing approved and moved to permanent listings",
-      listing: permanentListing,
-    });
-  } catch (error) {
-    console.error("Error approving temporary listing:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
-  }
-}The error is related to Next.js 15's new type checking for route handlers. The issue is with the params parameter type definition. Here's the fix:Fixed Route Handler - approve/route.tsCode import { NextRequest, NextResponse } from "next/server";
-import dbConnect from "@/lib/dbConnect";
-import TemporaryListing from "@/models/TemporaryListing";
-import FlatListing from "@/models/FlatListing";
-import User from "@/models/User";
-import { verKey Changes Made:
+Current booking status (Pending/Complete)
 
-Fixed params type: Changed from { params: { id: string } } to { params: Promise<{ id: string }> }
-Added await for params: const resolvedParams = await params;
-Updated id extraction: const id = resolvedParams.id;
-Removed the explicit cast: No need for (params as any).id
+Admin Dashboard Control:
+The Admin Panel includes a new section called “Buyers Transactions”. Here, the admin can:
 
-Additional Fix for the Logout Route:
-You also have a warning about unused request parameter in ./app/api/auth/logout/route.ts. Here's how to fix that:
-Option 1: If you don't need the request parameter, prefix it with underscore:
-typescriptexport async function POST(_request: NextRequest) {
-  // your logout logic
-}
-Option 2: If you do use the request parameter, make sure you're actually using it in your code.
-Next.js 15 Route Handler Changes:
-In Next.js 15, all dynamic route parameters are now provided as Promises to support async operations. This is why you need to:
+View detailed records of all buyer transactions
 
-Type params as Promise<{ id: string }>
-Await the params before accessing the values
+See which flat a buyer has booked
 
-After making these changes, run npm run build again and the TypeScript errors should be resolved.
+Track payment history and amount
+
+Update booking status from Pending to Complete
+

@@ -1,231 +1,118 @@
-ChatGPT said:
-Great! You're building a modern, feature-rich, blazing-fast flat listing platform for Bangladesh using powerful tools like Next.js, TypeScript, Firebase Auth, MongoDB, Cloudinary, and more.
+🚀 Phase 2: Firebase + MongoDB Integration
+Setup lib/firebase.ts
 
-Here’s a detailed step-by-step guideline to complete this project efficiently and professionally:
+Configure .env.local for Firebase
 
-🔧 Tech Stack Overview
-Frontend: Next.js (App Router), TypeScript, Tailwind CSS, ShadCN UI, React Hook Form, Yup, Redux Toolkit
+Use Firebase Auth for login/register (Email + Google)
 
-Backend: Firebase (Authentication + Email verification), MongoDB Atlas (via Mongoose)
+Store user data in MongoDB via API routes (app/api/)
 
-Storage: Next-Cloudinary (Images/Videos)
+📦 Phase 3: User Roles & Registration Logic
+Multi-role registration: Admin, Seller, Buyer, Family Tenant, Bachelor Tenant
 
-Payments: Manual (bKash/Nagad/Rocket, store receipts)
+Form validation using Yup + React Hook Form
 
-Deployment: Vercel (Frontend), MongoDB Atlas (Cloud DB)
+Cloudinary for NID/Passport upload (for Seller)
 
-✅ STEP-BY-STEP DEVELOPMENT PLAN
-🔹 Phase 1: Project Setup
-Initialize Next.js Project with TypeScript
-
-bash
-Copy
-Edit
-npx create-next-app@latest flat-finder --app --ts --tailwind
-cd flat-finder
-Install Essential Packages
-
-bash
-Copy
-Edit
-npm install @reduxjs/toolkit react-redux react-hook-form @hookform/resolvers yup next-cloudinary firebase mongoose axios
-Set Up Folder Structure
-
-bash
-Copy
-Edit
-/app
-/(public routes)
-/dashboard (layout + private)
-/components
-/lib (utils, firebase, db)
-/store (Redux Toolkit)
-/types
-/hooks
-/middlewares (auth middleware)
-🔹 Phase 2: Authentication (Firebase + Email Verification)
-Setup Firebase Project
-
-Enable Email/Password, and Google Auth.
-
-Enable Email Verification in Firebase console.
-
-Firebase Auth Code Setup
-
-Create lib/firebase.ts and initialize Firebase.
-
-Create auth context for global user state.
-
-Add useAuth hook for login/register/logout.
-
-Registration Flow
-
-Use React Hook Form + Yup for validation.
-
-After registration, send email verification:
+Saved MongoDB user schema:
 
 ts
 Copy
 Edit
-await sendEmailVerification(user);
-Block login if not verified.
-
-Role Handling
-
-Store user role (buyer/seller/admin/tenant) in Firestore or MongoDB.
-
-Restrict Admin to specific email.
-
-🔹 Phase 3: State Management (Redux Toolkit)
-Store authenticated user + role in Redux.
-
-Manage UI states, listing filters, dashboard states centrally.
-
-ts
-Copy
-Edit
-// store/userSlice.ts
-interface UserState {
-currentUser: User | null;
-role: 'admin' | 'buyer' | 'seller' | 'tenant' | null;
+{
+firebaseUid: string,
+name: string,
+email: string,
+role: 'admin' | 'seller' | 'buyer' | 'family_tenant' | 'bachelor_tenant',
+nidOrPassportUrl?: string,
+phone?: string,
+verified: boolean
 }
-🔹 Phase 4: Listings & Database (MongoDB + Mongoose)
-MongoDB Atlas Setup
+🏠 Phase 4: Flat Listing Feature
+Sellers can:
 
-Create lib/dbConnect.ts for connecting to DB.
+Pay for listing (mock initially)
 
-Schema Design
+Upload flat details
 
-User (with NID/passport)
+Upload images (Cloudinary)
 
-FlatListing (type: rent/sale/bachelor, ownerId, isPremium, etc.)
+Buyers/Families/Bachelors can:
 
-Booking (buyerId, listingId, date)
-
-Complaint (userId, targetId, reason)
-
-Warning/Badge
-
-Payment (type, amount, referenceId)
-
-API Routes (app/api)
-
-/api/listings, /api/bookings, /api/complaints, /api/payments, etc.
-
-🔹 Phase 5: File Upload (next-cloudinary)
-Upload images to Cloudinary using next-cloudinary.
-
-Use <CldUploadWidget /> or API route with secure signature.
-
-Save uploaded URLs in MongoDB.
-
-🔹 Phase 6: UI/UX with ShadCN UI
-Use ShadCN UI for:
-
-Modals, Forms, Buttons, Cards
-
-Tabs for Dashboard
-
-Alerts and Toasters for errors/success
-
-Tailwind for layout and responsiveness
-
-Animations for smoother experience (Framer Motion optional)
-
-🔹 Phase 7: Core Features by Role
-🏠 Seller
-Email verified + NID required to post
-
-Dashboard: Add listing, view bookings, approve/reject visits
-
-Payment before listing
-
-🛒 Buyer
 Browse listings
 
-Pay appointment fee (manual or via dummy Stripe UI)
+Filter/search
 
-Book flat view
+Book visits or contact landlords
 
-File complaints
+🛡️ Phase 5: Admin Dashboard
+Admins can:
 
-👨‍👩‍👧‍👦 Tenant (Family/Bachelor)
-Free to browse
+Approve/reject listings
 
-Can contact landlord directly
+Verify users (seller/buyer)
 
-🔐 Admin
-Approve/ban listings
+View complaints
 
-Manage complaints
+Warn or ban users
 
-Assign yellow/red cards
+💬 Phase 6: Complaints, Trust System, Bookings (Updated)
+Buyers can submit complaints and bookings
 
-Mark flats as sold/rented
+After payment, buyers will see their:
 
-View all transactions
+Pending bookings
 
-🔹 Phase 8: Trust, Verification, and Flags
-Store NID/passport image and verify manually.
+Booking history
 
-Yellow/Red Card: Add flags to user profile.
+Transaction details: including payment info, selected flat details, booking date, etc.
 
-After two yellow cards → auto ban.
+Sellers will see:
 
-Complaint System: Button in listing → opens form → admin reviews.
+Booking/payment history from buyers
 
-🔹 Phase 9: Static Pages + UX
-Home: Hero, CTA, How it works, Trust badges, Featured listings, Sponsors
+Buyer info + contact for confirmed appointments
 
-Buy, Rent, Bachelor: Filter listings by tag
+View bookings made for their flats
 
-Listing Detail: Carousel, Map, Owner masked info, Contact/book visit
+Admin Dashboard:
 
-Dashboard: Role-based rendering
+Two types of transactions view:
 
-FAQ, Terms, Privacy, Contact
+Sale Flat Transactions (full payment)
 
-🔹 Phase 10: Extra Features
-🌐 Language Toggle (Bangla/English)
+Buyer Appointment Transactions (appointment fee)
 
-✅ Mobile-first design
+Admin can see:
 
-📞 WhatsApp Floating Chat
+Buyer/seller details
 
-📩 Notification system (email/SMS/WhatsApp placeholder logic)
+Transaction/payment status
 
-🧾 Payment tracking dashboard (admin)
+Flat involved
 
-🌟 Reviews slider after deal closed
+Option to mark a transaction as complete
 
-💰 Sponsorship strip with logos (manual entry)
+💸 Phase 7: Payment (bKash/Nagad/Rocket) (Updated)
+Listing fees (Sellers)
 
-🚀 SEO & Performance
+Appointment fees (Buyers)
 
-Meta tags, next-sitemap, lazy loading, Cloudinary optimization
+✅ Initially mocked → then integrated with real payment gateways (bKash/Nagad) via hosted links or APIs.
 
-Lighthouse performance: target 95+
+💡 After payment:
 
-🚀 Deployment
-Vercel (Frontend)
+Booking and transaction details are saved
 
-MongoDB Atlas (DB)
+Available to respective users (buyer/seller/admin)
 
-Cloudinary (Media)
+Admins can verify/complete them manually if needed
 
-Firebase (Auth + Firestore if needed)
+🌐 Final Phase: Polishing
+Multilingual support (Bangla/English)
 
-✅ Final Checklist
-Task Status
-Firebase Auth with Email Verification ☐
-User Role System ☐
-MongoDB Models (Flat, Booking, Complaint...) ☐
-Redux Toolkit Store ☐
-ShadCN UI Setup ☐
-Listing System (CRUD) ☐
-Booking/Appointment Flow ☐
-Trust & Flag System ☐
-Admin Dashboard ☐
-Cloudinary Upload ☐
-SEO Optimization ☐
-Deployment to Vercel ☐
+SEO optimization
+
+Mobile responsiveness
+
+PWA or installable app support

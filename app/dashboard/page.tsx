@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,8 @@ export default function DashboardPage() {
   const { userProfile, loading, currentUser } = useAuth();
   const router = useRouter();
   const [totalListings, setTotalListings] = useState(0);
+  const [pendingBookingsCount, setPendingBookingsCount] = useState(0);
+
   const fetchTotalListings = useCallback(async () => {
     if (!userProfile) return;
     try {
@@ -26,6 +29,27 @@ export default function DashboardPage() {
     }
   }, [userProfile]);
 
+  const fetchPendingBookingsCount = useCallback(async () => {
+    if (!userProfile) return;
+    try {
+      const response = await fetch("/api/bookings/my-bookings", {
+        headers: {
+          Authorization: `Bearer ${document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("auth-token="))
+            ?.split("=")[1]}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const pending = data.filter((booking: any) => booking.status === "pending");
+        setPendingBookingsCount(pending.length);
+      }
+    } catch (error) {
+      console.error("Error fetching pending bookings:", error);
+    }
+  }, [userProfile]);
+
   useEffect(() => {
     if (!loading && !currentUser) {
       router.push("/auth/login");
@@ -34,8 +58,9 @@ export default function DashboardPage() {
       if (userProfile.role === "seller") {
         fetchTotalListings();
       }
+      fetchPendingBookingsCount();
     }
-  }, [loading, currentUser, userProfile, router, fetchTotalListings]);
+  }, [loading, currentUser, userProfile, router, fetchTotalListings, fetchPendingBookingsCount]);
 
   if (loading || !currentUser) {
     return (
@@ -106,12 +131,24 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
+              My Bookings
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Link href="/dashboard/my-bookings">
+              <Button className="w-full">View Bookings</Button>
+            </Link>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
               Pending Bookings
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
-            <p className="text-xs text-muted-foreground">No pending bookings</p>
+            <div className="text-2xl font-bold">{pendingBookingsCount}</div>
+            <p className="text-xs text-muted-foreground">{pendingBookingsCount === 0 ? "No pending bookings" : "Pending bookings"}</p>
           </CardContent>
         </Card>
         <Card>

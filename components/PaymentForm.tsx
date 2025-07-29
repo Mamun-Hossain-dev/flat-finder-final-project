@@ -3,15 +3,17 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
 interface PaymentFormProps {
-  listingType: string; // e.g., "normal_sell", "premium_rent"
+  listingType: string; // e.g., "normal_sell", "premium_rent", "appointment_booking"
   amount: number;
   userId: string;
   userInfo: { name: string; email: string; phone: string; address?: string; city?: string };
+  listingId?: string; // Optional: for appointment bookings
   onPaymentSuccess?: () => void; // Optional callback for successful payment
   onPaymentCancel?: () => void; // Optional callback for cancelled payment
+  isPremium?: boolean; // New: Optional prop to indicate if the listing is premium
 }
 
-const PaymentForm = ({ listingType, amount, userId, userInfo }: PaymentFormProps) => {
+const PaymentForm = ({ listingType, amount, userId, userInfo, listingId, isPremium }: PaymentFormProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const { toast } = useToast();
 
@@ -26,7 +28,9 @@ const PaymentForm = ({ listingType, amount, userId, userInfo }: PaymentFormProps
           type: listingType,
           amount,
           userId,
-          userInfo
+          userInfo,
+          listingId, // Include listingId if present
+          isPremium, // Include isPremium if present
         })
       });
 

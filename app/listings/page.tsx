@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Bed, Bath, Ruler, DollarSign, Tag } from "lucide-react";
+import { Bed, Bath, Ruler, IndianRupee, Tag } from "lucide-react";
 
 interface Listing {
   _id: string;
@@ -239,8 +239,7 @@ const ListingsPage = memo(() => {
                   </p>
                   <div className="flex items-center justify-between text-gray-700 text-lg font-bold mb-3">
                     <span className="flex items-center">
-                      <DollarSign className="w-4 h-4 mr-1" />
-                      {listing.price.toLocaleString()}
+                      ৳{listing.price.toLocaleString()}
                     </span>
                     <span className="flex items-center">
                       <Tag className="w-4 h-4 mr-1" />

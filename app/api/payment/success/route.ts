@@ -4,6 +4,7 @@ import Payment from "@/models/Payment";
 import { setAuthCookie } from "@/lib/auth-cookies";
 import User from "@/models/User";
 import Transaction from "@/models/Transaction";
+import Booking from "@/models/Booking"; // Import Booking model
 
 // Helper to safely create URL
 const createSafeUrl = (path: string, base: string | URL | null) => {
@@ -128,6 +129,13 @@ export const POST = async (request: NextRequest) => {
       (formDataEntries.temporaryListingId as string) ||
       request.nextUrl.searchParams.get("value_a") ||
       request.nextUrl.searchParams.get("temporaryListingId");
+    const listingId =
+      (formDataEntries.value_b as string) ||
+      request.nextUrl.searchParams.get("value_b");
+    const isPremium = 
+      (formDataEntries.value_c as string) === 'true' ||
+      request.nextUrl.searchParams.get("value_c") === 'true';
+    console.log("Payment Success - Retrieved isPremium:", isPremium);
 
     // Clean up temporaryListingId - handle string "undefined" and "null"
     if (
@@ -210,6 +218,32 @@ export const POST = async (request: NextRequest) => {
       description: `Payment for ${payment.type}`,
     });
     console.log("Transaction created:", transaction._id);
+
+    // If payment is for an appointment booking, create a Booking record
+    console.log("Checking booking creation condition:");
+    console.log("  payment.type:", payment.type);
+    console.log("  listingId:", listingId);
+    console.log("  isValidObjectId(listingId):", isValidObjectId(listingId));
+    if (payment.type === "appointment_booking" && listingId && isValidObjectId(listingId)) {
+      console.log("Creating booking record for appointment_booking");
+      try {
+        const newBooking = await Booking.create({
+          buyerId: payment.userId,
+          listingId: listingId,
+          amount: payment.amount,
+          bookingType: isPremium ? "premium" : "normal", // Set bookingType based on isPremium
+          paymentReferenceId: tran_id,
+          status: "pending", // Changed from "confirmed" to "pending"
+        });
+        console.log("Booking created successfully with ID:", newBooking._id);
+        console.log("  Buyer ID:", payment.userId);
+        console.log("  Listing ID:", listingId);
+      } catch (bookingError) {
+        console.error("Error creating booking record:", bookingError);
+      }
+    } else if (payment.type === "appointment_booking" && (!listingId || !isValidObjectId(listingId))) {
+      console.warn("Could not create booking record: Invalid or missing listingId for appointment_booking");
+    }
 
     // If a temporaryListingId is present, the temporary listing should remain for admin approval.
     // The creation of a permanent FlatListing will happen in a separate admin approval endpoint.

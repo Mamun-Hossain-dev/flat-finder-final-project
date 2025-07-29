@@ -15,6 +15,8 @@ import {
   LogOut,
   User,
   Settings,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -108,11 +110,11 @@ export default function Header() {
             {loading ? (
               <div className="h-10 w-24 bg-gray-200 rounded-md animate-pulse"></div> // Placeholder for loading state
             ) : currentUser && userProfile ? (
-              <DropdownMenu>
+              <DropdownMenu onOpenChange={setIsMenuOpen}>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="relative h-10 w-10 rounded-full"
+                    className="relative h-10 w-fit rounded-full flex items-center pr-2 focus-visible:ring-0 focus-visible:ring-offset-0"
                   >
                     <Avatar className="h-10 w-10">
                       {userProfile.profileImage ? (
@@ -126,6 +128,11 @@ export default function Header() {
                         </AvatarFallback>
                       )}
                     </Avatar>
+                    {isMenuOpen ? (
+                      <ChevronUp className="ml-2 h-4 w-4 text-purple-600" />
+                    ) : (
+                      <ChevronDown className="ml-2 h-4 w-4 text-purple-600" />
+                    )}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>

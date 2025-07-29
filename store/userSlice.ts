@@ -20,7 +20,11 @@ const initialState: UserState = {
 export const fetchUserProfile = createAsyncThunk(
   "user/fetchProfile",
   async (firebaseUid: string) => {
-    const response = await fetch(`/api/auth/profile/${firebaseUid}`);
+    const response = await fetch(`/api/auth/profile/${firebaseUid}`, {
+      headers: {
+        'Authorization': `Bearer ${document.cookie.split('; ').find(row => row.startsWith('auth-token='))?.split('=')[1]}`,
+      },
+    });
     if (!response.ok) {
       throw new Error("Failed to fetch user profile");
     }

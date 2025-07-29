@@ -6,7 +6,8 @@ import axios from 'axios';
 
 export const POST = async (req: NextRequest) => {
   try {
-    const { amount, type, userId, userInfo, temporaryListingId } = await req.json();
+    const { amount, type, userId, userInfo, temporaryListingId, listingId, isPremium } = await req.json();
+    console.log("Payment Init - Received isPremium:", isPremium);
     
     // Validate required fields
     if (!amount || !type || !userId || !userInfo) {
@@ -53,6 +54,8 @@ export const POST = async (req: NextRequest) => {
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/payment/cancel`,
       ipn_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/payment/ipn`,
       value_a: temporaryListingId, // Pass temporaryListingId as a custom parameter
+      value_b: listingId, // Pass listingId as a custom parameter
+      value_c: isPremium ? 'true' : 'false', // Pass isPremium as a custom parameter
       cus_name: userInfo.name || 'Guest User',
       cus_email: userInfo.email || 'guest@example.com',
       cus_phone: userInfo.phone || '01700000000',
