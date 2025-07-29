@@ -294,4 +294,35 @@ export const POST = async (request: NextRequest) => {
       createSafeUrl("/payment/failure", getSafeBaseUrl(request.url))
     );
   }
-};
+};I can see the issue. The problem is in the catch blocks of both the GET and POST methods where you're still using the old pattern that can pass null to createSafeUrl. Here's the fix:Fixed Payment Success RouteCode import { NextRequest, NextResponse } from "next/server";
+import dbConnect from "@/lib/dbConnect";
+import Payment from "@/models/Payment";
+import { setAuthCookie } from "@/lib/auth-cookies";
+import User from "@/models/User";
+import Transaction from "@Fixed Payment Success RouteCode ∙ Version 2     } else if (temporaryListingId) {
+      console.warn(
+        "Invalid temporaryListingId format (POST):",
+        temporaryListingId
+      );
+    } else {
+      console.warn("No temporaryListingId provided (POST)");
+    }
+
+    const user = await The key changes I made to fix the TypeScript error:
+
+Fixed the GET catch block: Changed from the complex expression that could resolve to null to simply using getSafeBaseUrl(request.url) which always returns a valid string.
+Fixed the POST catch block: Same fix - replaced the complex expression with getSafeBaseUrl(request.url).
+
+The original problematic code was:
+typescriptcreateSafeUrl(
+  "/payment/failure",
+  (request.url ? request.url.toString() : null) ||
+    (process.env.NEXT_PUBLIC_BASE_URL || null)
+)
+This expression could evaluate to null because:
+
+If request.url is falsy, it returns null
+If process.env.NEXT_PUBLIC_BASE_URL is undefined, the second part becomes null
+So the whole expression could be null || null which equals null
+
+The fix uses getSafeBaseUrl(request.url) which ensures we always get a valid string by providing "http://localhost:3000" as the final fallback. This satisfies TypeScript's type requirements for the createSafeUrl function.
