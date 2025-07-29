@@ -139,7 +139,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-6 px-4">
       <div className="w-full max-w-lg mb-4 text-left">
         <Link href="/">
           <Button variant="ghost" className="px-2">

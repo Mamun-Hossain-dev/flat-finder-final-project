@@ -14,16 +14,8 @@ const createSafeUrl = (path: string, base: string | URL | null) => {
       console.warn("Base URL is null/undefined, using fallback");
       return new URL(
         path,
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
+        process.env.NEXT_PUBLIC_BASE_URL
       );
-    }
-    return new URL(path, base);
-  } catch (error) {
-    console.error("Error creating URL:", error);
-    return new URL(
-      path,
-      process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-    );
   }
 };
 
@@ -108,8 +100,7 @@ export const GET = async (request: NextRequest) => {
       createSafeUrl(
         "/payment/failure",
         request.url ||
-          process.env.NEXT_PUBLIC_BASE_URL ||
-          "http://localhost:3000"
+          process.env.NEXT_PUBLIC_BASE_URL
       )
     );
   }
@@ -298,8 +289,7 @@ export const POST = async (request: NextRequest) => {
       createSafeUrl(
         "/payment/failure",
         request.url ||
-          process.env.NEXT_PUBLIC_BASE_URL ||
-          "http://localhost:3000"
+          process.env.NEXT_PUBLIC_BASE_URL
       )
     );
   }

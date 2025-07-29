@@ -12,9 +12,9 @@ const Navigations = () => {
 
   return (
     <nav className="flex items-center space-x-4">
-      {userProfile && userProfile.role !== "admin" && (
-        <Link href="/dashboard">
-          <Button variant={pathname === "/dashboard" ? "secondary" : "ghost"}>
+      {userProfile && (
+        <Link href={userProfile.role === "admin" ? "/dashboard/admin" : "/dashboard"}>
+          <Button variant={pathname.startsWith("/dashboard") ? "secondary" : "ghost"}>
             Dashboard
           </Button>
         </Link>

@@ -161,6 +161,7 @@ export default function AdminTransactionsPage() {
                     <TableCell>
                       <p>{transaction.buyerId.name}</p>
                       <p className="text-sm text-gray-500">{transaction.buyerId.email}</p>
+                      <p className="text-sm text-gray-500">{transaction.buyerId.phone}</p>
                     </TableCell>
                     <TableCell>
                       <Link href={`/listings/${transaction.listingId._id}`} className="text-blue-600 hover:underline">

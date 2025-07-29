@@ -216,14 +216,32 @@ export default function Header() {
               ))}
 
               <div className="pt-4 border-t flex flex-col space-y-2">
-                {currentUser ? (
+                {currentUser && userProfile ? (
                   <>
+                    {userProfile.role === "admin" && (
+                      <Link
+                        href="/dashboard/admin"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <Button variant="outline" className="w-full">
+                          Admin Dashboard
+                        </Button>
+                      </Link>
+                    )}
                     <Link
                       href="/dashboard"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       <Button variant="outline" className="w-full">
                         Dashboard
+                      </Button>
+                    </Link>
+                    <Link
+                      href="/dashboard/profile"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <Button variant="outline" className="w-full">
+                        Profile Settings
                       </Button>
                     </Link>
                     <Button
