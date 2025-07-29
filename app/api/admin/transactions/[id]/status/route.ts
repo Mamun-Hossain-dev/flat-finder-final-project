@@ -4,7 +4,10 @@ import Booking from '@/models/Booking';
 import { verifyToken } from '@/lib/auth-cookies';
 import User from '@/models/User';
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(
+  req: NextRequest, 
+    context: { params: Promise<{ id: string }> }
+) {
   await dbConnect();
 
   try {
@@ -23,7 +26,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
     }
 
-    const { id } = params;
+    const { id } = await context.params;
     const { status } = await req.json();
 
     if (!status || !['pending', 'completed', 'cancelled'].includes(status)) {

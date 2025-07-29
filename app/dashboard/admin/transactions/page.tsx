@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -41,22 +41,7 @@ export default function AdminTransactionsPage() {
   const { toast } = useToast();
   const router = useRouter();
 
-  useEffect(() => {
-    if (!authLoading) {
-      if (!userProfile || userProfile.role !== 'admin') {
-        router.push('/dashboard'); // Redirect if not admin
-        toast({
-          title: 'Access Denied',
-          description: 'You do not have permission to view this page.',
-          variant: 'destructive',
-        });
-      } else {
-        fetchTransactions();
-      }
-    }
-  }, [userProfile, authLoading, router, toast]);
-
-  const fetchTransactions = async () => {
+  const fetchTransactions = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -81,7 +66,24 @@ export default function AdminTransactionsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    if (!authLoading) {
+      if (!userProfile || userProfile.role !== 'admin') {
+        router.push('/dashboard'); // Redirect if not admin
+        toast({
+          title: 'Access Denied',
+          description: 'You do not have permission to view this page.',
+          variant: 'destructive',
+        });
+      } else {
+        fetchTransactions();
+      }
+    }
+  }, [userProfile, authLoading, router, toast, fetchTransactions]);
+
+  
 
   const handleStatusChange = async (transactionId: string, newStatus: 'pending' | 'completed' | 'cancelled') => {
     try {

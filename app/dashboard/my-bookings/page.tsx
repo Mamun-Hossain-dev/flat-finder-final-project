@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
@@ -31,16 +31,7 @@ export default function MyBookingsPage() {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  useEffect(() => {
-    if (!authLoading && currentUser) {
-      fetchMyBookings();
-    } else if (!authLoading && !currentUser) {
-      setError('Please log in to view your bookings.');
-      setLoading(false);
-    }
-  }, [currentUser, authLoading]);
-
-  const fetchMyBookings = async () => {
+  const fetchMyBookings = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -65,7 +56,18 @@ export default function MyBookingsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    if (!authLoading && currentUser) {
+      fetchMyBookings();
+    } else if (!authLoading && !currentUser) {
+      setError('Please log in to view your bookings.');
+      setLoading(false);
+    }
+  }, [currentUser, authLoading, fetchMyBookings]);
+
+  
 
   if (authLoading || loading) {
     return (

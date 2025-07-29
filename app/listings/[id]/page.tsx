@@ -3,15 +3,9 @@
 import { useEffect, useState, useCallback, memo } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
   Carousel,
   CarouselContent,
@@ -19,9 +13,18 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Home, Bed, Bath, Ruler, IndianRupee, Tag, Eye, Phone, Mail } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import PaymentForm from "@/components/PaymentForm"; // Import PaymentForm
+import {
+  Bed,
+  Bath,
+  Ruler,
+  Eye,
+  Mail,
+  Phone,
+  Tag,
+  Home,
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import PaymentForm from "@/components/PaymentForm";
 
 interface Listing {
   _id: string;
