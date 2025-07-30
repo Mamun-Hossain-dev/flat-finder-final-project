@@ -130,7 +130,7 @@ export default function HeroSection() {
             </div>
 
             {/* Enhanced Search Interface */}
-            <div className="mb-12 sm:mb-16 lg:mb-20 px-2">
+            <div className="mb-8 sm:mb-10 lg:mb-12 px-2">
               <div className="relative group max-w-6xl mx-auto">
                 <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-indigo-500/20 rounded-3xl blur-lg opacity-70 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <div className="relative bg-white/10 backdrop-blur-2xl rounded-3xl p-6 sm:p-8 lg:p-10 border border-white/20 hover:border-white/30 transition-all duration-500 shadow-2xl">
@@ -226,7 +226,7 @@ export default function HeroSection() {
             </div>
 
             {/* Call-to-Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center mb-16 sm:mb-20 lg:mb-24 px-4">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center mb-8 sm:mb-12 lg:mb-16 px-4">
               <Link href="/auth/register?role=seller" className="group">
                 <Button
                   size="lg"

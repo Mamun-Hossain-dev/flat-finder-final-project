@@ -8,6 +8,8 @@ import {
   Twitter,
   Instagram,
   Linkedin,
+  Link2,
+  Gavel,
 } from "lucide-react";
 
 export default function Footer() {
@@ -37,12 +39,17 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Company info */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <Home className="w-5 h-5 text-white" />
+            <Link href="/" className="flex items-center space-x-3 group">
+              <div className="relative">
+                <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 via-blue-600 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25 group-hover:shadow-blue-500/40 transition-all duration-300 group-hover:scale-105">
+                  <Home className="w-5 h-5 text-white" />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-blue-600 to-cyan-600 rounded-xl opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-300" />
               </div>
-              <span className="font-bold text-xl">FlatFinder</span>
-            </div>
+              <span className="font-bold text-2xl bg-gradient-to-r from-gray-100 via-gray-200 to-white bg-clip-text text-transparent">
+                FlatFinder
+              </span>
+            </Link>
 
             <p className="text-gray-300 leading-relaxed text-sm">
               Bangladesh&apos;s most trusted platform for buying, selling, and
@@ -68,7 +75,10 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+            <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
+              <Link2 className="w-5 h-5" />
+              <span>Quick Links</span>
+            </h3>
             <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.name}>
@@ -85,7 +95,10 @@ export default function Footer() {
 
           {/* Legal links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Legal</h3>
+            <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
+              <Gavel className="w-5 h-5" />
+              <span>Legal</span>
+            </h3>
             <ul className="space-y-2">
               {legalLinks.map((link) => (
                 <li key={link.name}>
