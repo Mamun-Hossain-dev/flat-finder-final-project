@@ -1,5 +1,5 @@
 import "./globals.css";
-import { Inter } from "next/font/google";
+import { Poppins } from "next/font/google";
 import { AuthProvider } from "@/hooks/useAuth";
 import { Providers } from "@/app/providers";
 import { Suspense } from "react";
@@ -8,7 +8,10 @@ import Footer from "@/components/layout/Footer";
 import { Toaster } from "@/components/ui/toaster";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 
-const inter = Inter({ subsets: ["latin"] });
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
 
 export const metadata = {
   title: "FlatFinder - Buy, Sell & Rent Flats in Bangladesh",
@@ -23,7 +26,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={poppins.className}>
         <Providers>
           <AuthProvider>
             <Suspense fallback={<LoadingSpinner />}>

@@ -1,18 +1,7 @@
-    ./app/api/payment/success/route.ts:17:9             │
- │    Type error: Argument of type 'string |              │
- │    null' is not assignable to parameter of             │
- │    type 'string | URL | undefined'.                    │
- │      Type 'null' is not assignable to type             │
- │    'string | URL | undefined'.                         │ 
- │                                                        │ 
- │      15 |       return new URL(                        │ 
- │      16 |         path,                                │ 
- │    > 17 |                                              │ 
- │    process.env.NEXT_PUBLIC_BASE_URL ||                 │ 
- │    null                                                │ 
- │         |         ^                                    │ 
- │      18 |       );                                     │ 
- │      19 |     }                                        │ 
- │      20 |     return new URL(path, base);              │ 
- │    Next.js build worker exited with code:              │ 
- │    1 and signal: null      
+Invalid import
+
+./components/layout
+
+Invalid import
+'client-only' cannot be imported from a Server Component module. It should only be used from a Client Component.
+The error was caused by using 'styled-jsx'. It only works in a Client Component but none of its 

@@ -18,22 +18,6 @@ export default function TrustBadges() {
       bgColor: "bg-blue-50",
     },
     {
-      icon: CheckCircle,
-      title: "Trusted Users",
-      description: "Phone & email verified members only",
-      stat: "50K+",
-      color: "text-green-600",
-      bgColor: "bg-green-50",
-    },
-    {
-      icon: Users,
-      title: "Happy Customers",
-      description: "Successful property transactions",
-      stat: "10K+",
-      color: "text-orange-600",
-      bgColor: "bg-orange-50",
-    },
-    {
       icon: Award,
       title: "Quality Assured",
       description: "Premium property standards maintained",
@@ -72,7 +56,7 @@ export default function TrustBadges() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {badges.map((badge, index) => {
             const IconComponent = badge.icon;
             return (
