@@ -161,7 +161,16 @@ export default function FeaturedListings() {
           </div>
         )}
 
-        
+        <div className="text-center mt-12">
+          <Link href="/listings" className="block mx-auto w-fit">
+            <Button
+              size="lg"
+              className="bg-gradient-to-r from-orange-500 to-pink-600 hover:from-orange-600 hover:to-pink-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 border-0 text-sm h-12 flex items-center justify-center"
+            >
+              View All Properties
+            </Button>
+          </Link>
+        </div>
       </div>
     </section>
   );

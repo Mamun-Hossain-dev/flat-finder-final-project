@@ -186,7 +186,7 @@ export default function AdminUsersPage() {
 
       {/* User Details Modal */}
       <Dialog open={showUserDetailsModal} onOpenChange={setShowUserDetailsModal}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="w-11/12 sm:max-w-lg md:max-w-xl lg:max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>User Details</DialogTitle>
             <DialogDescription>

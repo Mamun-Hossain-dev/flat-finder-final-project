@@ -160,14 +160,14 @@ export default function ContactSection() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-24 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="grid md:grid-cols-2 gap-12 items-start">
           {/* Left Column - Contact Info */}
           <div className="space-y-8">
             <div>
               <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-                Lets Start a <span className="text-blue-700">Conversation</span>
+                Lets Start a <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-pink-600">Conversation</span>
               </h1>
               <p className="text-lg text-gray-600 leading-relaxed">
                 Ready to discuss your property needs? Fill out the form and our
@@ -178,19 +178,19 @@ export default function ContactSection() {
             <div className="space-y-6">
               {[
                 {
-                  icon: <Mail className="text-blue-600" size={24} />,
+                  icon: <Mail className="text-orange-500" size={24} />,
                   title: "Email Us",
                   detail: "info@flatfinderbd.com",
                   href: "mailto:info@flatfinderbd.com",
                 },
                 {
-                  icon: <Phone className="text-blue-500" size={24} />,
+                  icon: <Phone className="text-orange-500" size={24} />,
                   title: "Call Us",
                   detail: "+880 1XXXXXXXXX",
                   href: "tel:+880 1XXXXXXXXX",
                 },
                 {
-                  icon: <MapPin className="text-blue-600" size={24} />,
+                  icon: <MapPin className="text-orange-500" size={24} />,
                   title: "Visit Us",
                   detail: "[Your FlatFinder BD Address], Dhaka, Bangladesh",
                   href: "#", // Placeholder, remove if no specific map link
@@ -206,18 +206,7 @@ export default function ContactSection() {
                       {contact.title}
                     </CardTitle>
                     <p className="text-gray-600 mt-1">{contact.detail}</p>
-                    {contact.href && (
-                      <Link
-                        href={contact.href}
-                        className="text-blue-600 hover:underline text-sm mt-1 block"
-                      >
-                        {contact.title === "Email Us"
-                          ? "Send Email"
-                          : contact.title === "Call Us"
-                          ? "Call Now"
-                          : "Get Directions"}
-                      </Link>
-                    )}
+                    
                   </div>
                 </Card>
               ))}
@@ -370,7 +359,8 @@ export default function ContactSection() {
                   type="button"
                   onClick={handleSubmit}
                   disabled={isLoading}
-                  className="w-full"
+                  size="lg"
+                  className="w-full bg-gradient-to-r from-orange-500 to-pink-600 hover:from-orange-600 hover:to-pink-700 text-white font-bold py-4 sm:py-5 px-8 sm:px-10 rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 border-0 text-base sm:text-lg h-14 sm:h-16 flex items-center justify-center"
                 >
                   {isLoading ? (
                     <div className="flex items-center space-x-2">

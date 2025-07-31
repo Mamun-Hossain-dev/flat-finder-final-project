@@ -93,12 +93,12 @@ export default function DashboardPage() {
 
   // Generic Dashboard Content (will be replaced by role-specific components)
   return (
-    <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
       <h1 className="text-3xl font-bold text-gray-900">
         Welcome to your Dashboard, {userProfile.name}!
       </h1>
       <p className="mt-2 text-lg text-gray-600">
-        Your role: {userProfile.role}
+        Role: <span className="font-semibold text-blue-600">{userProfile.role}</span>
       </p>
 
       <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -166,7 +166,7 @@ export default function DashboardPage() {
         <div className="mt-4 flex flex-wrap gap-4">
           {userProfile.role === "seller" && <Link href="/dashboard/add-listing"><Button>Add New Listing</Button></Link>}
           {userProfile.role === "buyer" && <Button>Browse Flats</Button>}
-          {userProfile.role === "admin" && <Button>Manage Users</Button>}
+          
           <Button
             variant="outline"
             onClick={() => router.push("/dashboard/profile")}

@@ -2,6 +2,7 @@
 
 import { Search, DollarSign, Key, CheckCircle } from "lucide-react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function HowItWorksPage() {
   const steps = [
@@ -32,7 +33,7 @@ export default function HowItWorksPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-16 px-4">
+    <div className="min-h-screen bg-gray-50 py-24 px-4">
       <div className="max-w-4xl mx-auto text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
           How FlatFinder Works
@@ -66,10 +67,13 @@ export default function HowItWorksPage() {
         <p className="text-lg text-gray-600 mb-8">
           Start browsing our extensive collection of verified listings today.
         </p>
-        <Link href="/listings">
-          <button className="px-8 py-4 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300">
+        <Link href="/listings" className="flex justify-center">
+          <Button
+            size="lg"
+            className="bg-gradient-to-r from-orange-500 to-pink-600 hover:from-orange-600 hover:to-pink-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 border-0 text-sm h-12 flex items-center justify-center"
+          >
             Browse Listings
-          </button>
+          </Button>
         </Link>
       </div>
     </div>

@@ -21,7 +21,12 @@ export default function PaymentFailurePage() {
             Please try again or contact support if the problem persists.
           </p>
           <Link href="/dashboard">
-            <Button variant="destructive">Go to Dashboard</Button>
+            <Button
+              size="lg"
+              className="w-full bg-gradient-to-r from-orange-500 to-pink-600 hover:from-orange-600 hover:to-pink-700 text-white font-bold py-4 sm:py-5 px-8 sm:px-10 rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 border-0 text-base sm:text-lg h-14 sm:h-16 flex items-center justify-center"
+            >
+              Go to Dashboard
+            </Button>
           </Link>
         </CardContent>
       </Card>

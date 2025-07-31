@@ -13,13 +13,7 @@ export default function HomePage() {
       <HeroSection />
       <TrustBadges />
       <FeaturedListings />
-      <div className="text-center mt-12">
-        <Link href="/listings">
-          <Button size="lg" variant="outline">
-            Browse All Properties
-          </Button>
-        </Link>
-      </div>
+      
       <HowItWorks />
       <Testimonials />
       <WhatsAppFloat />

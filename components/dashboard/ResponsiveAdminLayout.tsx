@@ -60,7 +60,7 @@ export default function ResponsiveAdminLayout({ children }: ResponsiveAdminLayou
           </Button>
         </header>
 
-        <main className="flex-1 p-4 md:p-8">
+        <main className="flex-1 p-4 md:p-8 lg:p-10 xl:p-12">
           {children}
         </main>
       </div>

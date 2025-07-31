@@ -110,21 +110,30 @@ export default function HeroSection() {
                 <span className="block bg-gradient-to-r from-white via-blue-100 to-cyan-200 bg-clip-text text-transparent animate-gradient-slow">
                   Find Your
                 </span>
-                <span className="relative block bg-gradient-to-r from-cyan-300 via-blue-400 to-indigo-500 bg-clip-text text-transparent drop-shadow-lg">
-                  Dream Home
-                  <div className="absolute -top-2 -right-2 sm:-top-4 sm:-right-4 w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full blur-md opacity-70 animate-ping"></div>
-                  <div className="absolute top-0 right-0 w-3 h-3 sm:w-4 sm:h-4 bg-cyan-300 rounded-full animate-pulse"></div>
+                <span className="relative block">
+                  <span className="absolute -inset-2 bg-gradient-to-r from-cyan-200 to-blue-300 opacity-50 blur-2xl rounded-full"></span>
+                  <span className="relative block bg-gradient-to-r from-cyan-300 via-blue-400 to-indigo-500 bg-clip-text text-transparent drop-shadow-lg">
+                    Dream Home
+                    <div className="absolute -top-2 -right-2 sm:-top-4 sm:-right-4 w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full blur-md opacity-70 animate-ping"></div>
+                    <div className="absolute top-0 right-0 w-3 h-3 sm:w-4 sm:h-4 bg-cyan-300 rounded-full animate-pulse"></div>
+                  </span>
                 </span>
               </h1>
 
               <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl mb-8 sm:mb-12 lg:mb-16 opacity-90 max-w-5xl mx-auto leading-relaxed font-light px-4">
                 Bangladesh&apos;s most{" "}
-                <span className="font-semibold text-transparent bg-gradient-to-r from-cyan-400 to-indigo-400 bg-clip-text">
-                  trusted platform
+                <span className="relative inline-block">
+                  <span className="absolute -inset-1 bg-gradient-to-r from-cyan-200 to-blue-300 opacity-40 blur-xl rounded-full"></span>
+                  <span className="relative font-semibold text-transparent bg-gradient-to-r from-cyan-300 to-indigo-400 bg-clip-text">
+                    trusted platform
+                  </span>
                 </span>{" "}
                 for buying, selling, and renting{" "}
-                <span className="font-semibold text-transparent bg-gradient-to-r from-cyan-400 to-indigo-400 bg-clip-text">
-                  verified properties
+                <span className="relative inline-block">
+                  <span className="absolute -inset-1 bg-gradient-to-r from-cyan-200 to-blue-300 opacity-40 blur-xl rounded-full"></span>
+                  <span className="relative font-semibold text-transparent bg-gradient-to-r from-cyan-300 to-indigo-400 bg-clip-text">
+                    verified properties
+                  </span>
                 </span>
               </p>
             </div>

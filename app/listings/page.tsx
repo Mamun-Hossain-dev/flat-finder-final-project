@@ -142,7 +142,7 @@ const ListingsPage = memo(() => {
   }
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto py-24">
       <h1 className="text-3xl font-bold mb-6">Available Listings</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
@@ -187,8 +187,19 @@ const ListingsPage = memo(() => {
           />
           <Label htmlFor="isPremium">Premium Listings</Label>
         </div>
-        <Button onClick={applyFilters}>Apply Filters</Button>
-        <Button variant="outline" onClick={clearFilters}>
+        <Button
+          onClick={applyFilters}
+          size="lg"
+          className="w-full bg-gradient-to-r from-orange-500 to-pink-600 hover:from-orange-600 hover:to-pink-700 text-white font-bold py-2 px-4 rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 border-0 text-sm h-12 flex items-center justify-center"
+        >
+          Apply Filters
+        </Button>
+        <Button
+          variant="outline"
+          onClick={clearFilters}
+          size="lg"
+          className="w-full border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white backdrop-blur-xl bg-transparent font-bold py-2 px-4 rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 text-sm h-12 flex items-center justify-center"
+        >
           Clear Filters
         </Button>
       </div>

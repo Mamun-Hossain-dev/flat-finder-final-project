@@ -101,7 +101,8 @@ export default function VerifyEmailPage() {
           <div className="space-y-2">
             <Button
               onClick={checkVerification}
-              className="w-full"
+              size="lg"
+              className="w-full bg-gradient-to-r from-orange-500 to-pink-600 hover:from-orange-600 hover:to-pink-700 text-white font-bold py-4 sm:py-5 px-8 sm:px-10 rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 border-0 text-base sm:text-lg h-14 sm:h-16 flex items-center justify-center"
               disabled={loading}
             >
               <RefreshCw className="w-4 h-4 mr-2" />
@@ -111,7 +112,8 @@ export default function VerifyEmailPage() {
             <Button
               variant="outline"
               onClick={resendVerification}
-              className="w-full"
+              size="lg"
+              className="w-full border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white backdrop-blur-xl bg-transparent font-bold py-4 sm:py-5 px-8 sm:px-10 rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 text-base sm:text-lg h-14 sm:h-16 flex items-center justify-center"
               disabled={loading}
             >
               Resend Verification Email
