@@ -1,7 +1,18 @@
-Invalid import
-
-./components/layout
-
-Invalid import
-'client-only' cannot be imported from a Server Component module. It should only be used from a Client Component.
-The error was caused by using 'styled-jsx'. It only works in a Client Component but none of its 
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Desktop\Saraf-project\flat-finder\.next\server\pages\_app\build-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Desktop\\Saraf-project\\flat-finder\\.next\\server\\pages\\_app\\build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open 'C:\Users\USER\Desktop\Saraf-project\flat-finder\.next\server\pages\_app\build-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Desktop\\Saraf-project\\flat-finder\\.next\\server\\pages\\_app\\build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open 'C:\Users\USER\Desktop\Saraf-project\flat-finder\.next\server\app\favicon.ico\[__metadata_id__]\route\app-paths-manifest.json'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'C:\\Users\\USER\\Desktop\\Saraf-project\\flat-finder\\.next\\server\\app\\favicon.ico\\[__metadata_id__]\\route\\app-paths-manifest.json'
+}
