@@ -1,7 +1,7 @@
 // app/auth/register/page.tsx
 "use client";
 import { useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -96,7 +96,7 @@ export default function RegisterPage() {
         nidImage: nidImage,
       });
 
-      setSuccess(true);
+      router.push("/");
       } catch (error: any) {
       setError(error.message);
     } finally {
@@ -104,39 +104,7 @@ export default function RegisterPage() {
     }
   };
 
-  if (success) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-100 py-12 px-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold text-green-600">
-              Registration Successful!
-            </CardTitle>
-            <CardDescription>
-              Please check your email to verify your account
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-center">
-            <p className="text-gray-600 mb-4">
-              We have sent a verification link to{" "}
-              <strong>{watch("email")}</strong>. Please click the link to
-              activate your account.
-            </p>
-            <div className="space-y-2">
-              <Link href="/auth/login">
-                <Button className="w-full">Go to Login</Button>
-              </Link>
-              <Link href="/auth/resend-verification">
-                <Button variant="outline" className="w-full">
-                  Resend Verification Email
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-6 px-4">
