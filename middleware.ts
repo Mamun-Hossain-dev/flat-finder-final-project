@@ -31,9 +31,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/auth/login", request.url));
   }
 
-  // Redirect to dashboard if accessing auth routes while authenticated
+  // Redirect to home if accessing auth routes while authenticated
   if (isAuthRoute && isValidToken) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return NextResponse.next();
